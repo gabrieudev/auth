@@ -1,5 +1,6 @@
 package com.api.auth.model;
 
+import com.api.auth.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ public class Role {
     private Long id;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
 
 }
