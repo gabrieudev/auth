@@ -22,6 +22,9 @@ public class User {
     private UUID id;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
