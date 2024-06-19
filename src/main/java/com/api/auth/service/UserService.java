@@ -66,7 +66,7 @@ public class UserService {
         confirmationToken.setExpiresAt(Instant.now().plusSeconds(600));
         confirmationTokenRepository.save(confirmationToken);
 
-        String link = "http://localhost:8080/api/confirm?token=" + confirmationToken.getToken();
+        String link = "http://localhost:8080/api/users/confirm?token=" + confirmationToken.getToken();
         Email email = new Email(
                 user.getEmail(),
                 "Email confirm",
