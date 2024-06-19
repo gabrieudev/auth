@@ -39,7 +39,10 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_BASIC')")
-    public ResponseEntity<UserDTO> getById(@PathVariable("userId") UUID userId) {
+    public ResponseEntity<UserDTO> getById(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("userId") UUID userId
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getById(userId));
     }
 

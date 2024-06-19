@@ -46,13 +46,13 @@ public class UserService {
     private TokenService tokenService;
 
     public void register(RegisterDTO registerDTO) {
-        if (userRepository.existsByEmail(registerDTO.email())) {
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new UserAlreadyExistsException("User already exists");
         }
 
         User user = mappingService.toModel(registerDTO);
-        Role role = roleRepository.findById(1L).orElseThrow();
-        user.setPassword(bCryptPasswordEncoder.encode(registerDTO.password()));
+        Role role = roleRepository.findById(2L).orElseThrow();
+        user.setPassword(bCryptPasswordEncoder.encode(registerDTO.getPassword()));
         user.setEnabled(false);
         user.setRoles(Set.of(role));
         user.setCreatedAt(Instant.now());

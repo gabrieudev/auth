@@ -18,7 +18,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFoundException(EntityNotFoundException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getLocalizedMessage());
-        problemDetail.setTitle("Entity not found");
+        problemDetail.setTitle("Not found");
         problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty("stacktrace", e.getStackTrace());
         return problemDetail;
