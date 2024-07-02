@@ -1,4 +1,4 @@
-package com.api.auth.config.data_loader;
+package com.api.diceRoller.config.data_loader;
 
 import com.api.auth.model.Role;
 import com.api.auth.model.User;

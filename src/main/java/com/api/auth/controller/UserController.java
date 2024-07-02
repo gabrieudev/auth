@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +21,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/confirm")
-    public ResponseEntity<String> confirm(
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestParam("token") String token
-    ) {
-        userService.confirmEmail(token, UUID.fromString(jwt.getSubject()));
+    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+        userService.confirmEmail(token);
         return ResponseEntity.status(HttpStatus.OK).body("Email confirmed successfully");
     }
 
@@ -39,10 +34,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_BASIC')")
-    public ResponseEntity<UserDTO> getById(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable("userId") UUID userId
-    ) {
+    public ResponseEntity<UserDTO> getById(@PathVariable("userId") UUID userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getById(userId));
     }
 

@@ -1,4 +1,4 @@
-package com.api.auth.config.security;
+package com.api.diceRoller.config.security;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;

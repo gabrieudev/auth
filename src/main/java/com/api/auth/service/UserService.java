@@ -86,18 +86,13 @@ public class UserService {
         return new TokenDTO(token, Instant.now().plusSeconds(300));
     }
 
-    public void confirmEmail(String token, UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with this id: " + userId)
-        );
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByUser(user).orElseThrow(
+    public void confirmEmail(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token).orElseThrow(
                 () -> new EntityNotFoundException("Token not found")
         );
+        User user = confirmationToken.getUser();
         if (confirmationToken.getExpiresAt().isBefore(Instant.now())) {
             throw new AccessDeniedException("Token expired");
-        }
-        if (!confirmationToken.getToken().equals(token)) {
-            throw new AccessDeniedException("Invalid token");
         }
         user.setEnabled(true);
         userRepository.save(user);

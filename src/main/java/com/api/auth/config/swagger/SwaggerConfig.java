@@ -1,4 +1,4 @@
-package com.api.auth.config.swagger;
+package com.api.diceRoller.config.swagger;
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI diceRollerOpenAPI(){
+    public OpenAPI authOpenAPI(){
         return new OpenAPI()
                 .info(new Info().title("Auth REST API")
                         .description("REST API for authentication and authorization")
