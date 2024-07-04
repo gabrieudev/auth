@@ -1,4 +1,4 @@
-package com.api.diceRoller.config.swagger;
+package com.api.auth.config.swagger;
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;

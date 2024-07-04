@@ -1,4 +1,4 @@
-package com.api.diceRoller.config.mapper;
+package com.api.auth.config.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
