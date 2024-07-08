@@ -76,11 +76,11 @@ public class UserService {
     }
 
     public TokenDTO login(LoginDTO loginDTO) {
-        User user = userRepository.findByEmail(loginDTO.email()).orElseThrow(
+        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(
                 () -> new BadCredentialsException("Invalid email")
         );
-        if (!bCryptPasswordEncoder.matches(loginDTO.password(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
+        if (!bCryptPasswordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect password");
         }
         String token = tokenService.generateToken(user);
         return new TokenDTO(token, Instant.now().plusSeconds(300));
@@ -95,6 +95,18 @@ public class UserService {
             throw new AccessDeniedException("Token expired");
         }
         user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+    public void changePassword(PasswordDTO passwordDTO) {
+        User user = userRepository.findByEmail(passwordDTO.getEmail()).orElseThrow(
+                () -> new BadCredentialsException("Invalid email")
+        );
+        if (!bCryptPasswordEncoder.matches(passwordDTO.getCurrentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect password");
+        }
+        String newEncryptedPassword = bCryptPasswordEncoder.encode(passwordDTO.getNewPassword());
+        user.setPassword(newEncryptedPassword);
         userRepository.save(user);
     }
 

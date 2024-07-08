@@ -1,7 +1,9 @@
 package com.api.auth.controller;
 
+import com.api.auth.dto.PasswordDTO;
 import com.api.auth.dto.UserDTO;
 import com.api.auth.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,6 +45,13 @@ public class UserController {
     public ResponseEntity<String> delete(@PathVariable("userId") UUID userId) {
         userService.delete(userId);
         return ResponseEntity.status(HttpStatus.OK).body("User removed successfully");
+    }
+
+    @PostMapping("/change-password")
+    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordDTO passwordDTO) {
+        userService.changePassword(passwordDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully");
     }
 
 }
