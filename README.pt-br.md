@@ -1,6 +1,6 @@
 # API REST para autenticação e autorização
 
-![Java](https://img.shields.io/badge/Java-21-orange) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-green) ![Spring Security](https://img.shields.io/badge/Spring%20Security-6-green) [![LinkedIn](https://img.shields.io/badge/Connect%20on-LinkedIn-blue)](https://www.linkedin.com/in/gabrieudev) ![GPL License](https://img.shields.io/badge/License-GPL-blue)
+![Java](https://img.shields.io/badge/Java-17-orange) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-green) ![Spring Security](https://img.shields.io/badge/Spring%20Security-6-green) [![LinkedIn](https://img.shields.io/badge/Connect%20on-LinkedIn-blue)](https://www.linkedin.com/in/gabrieudev) ![GPL License](https://img.shields.io/badge/License-GPL-blue)
 
 Seja bem vindo(a) ao meu projeto de **API REST para autenticação e autorização** de usuários. 
 
@@ -23,19 +23,20 @@ O projeto foi criado para faciltar o processo de autenticação e autorização 
 ## Funcionalidades
 
 - Envio de email para confirmação de cadastro dos usuários.
+- Troca de senhas.
 - Buscas utilizando paginação.
-- Documentação com endpoints utilizando Swagger.
+- Documentação utilizando Swagger.
 - Login de usuários com autenticação através de JWT.
 - Autorização com roles para o controle de acesso de diferentes endpoints da API. 
 - Senhas criptografadas utilizando as melhores práticas.
-- Integração com o banco de dados PostgreSQL.
+- Integração com o banco de dados MySQL.
 
 ## Tecnologias
 
-- ![Java](https://img.shields.io/badge/Java-21-orange): Linguagem de programação.
+- ![Java](https://img.shields.io/badge/Java-17-orange): Linguagem de programação.
 - ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-green): Framework usado para a construção de aplicações.
 - ![Spring Security](https://img.shields.io/badge/Spring%20Security-6-green): Framework para segurança de aplicações Spring.
-- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue): Banco de dados relacional.
+- ![MySQL](https://img.shields.io/badge/MySQL-Database-blue): Banco de dados relacional.
 
 ## Iniciando
 
@@ -43,19 +44,21 @@ Siga esses passos para executar o projeto na sua máquina:
 
 1. Clone o repositório: `git clone https://github.com/gabrieudev/auth.git`
 2. Navegue para o diretório do projeto: `cd <caminho>`
-3. Atualize as configurações gerais em `application.properties`.
-4. Construa o projeto: `./mvnw clean install` (para Windows: `mvnw.cmd clean install`)
-5. Execute a aplicação: `./mvnw spring-boot:run` (para Windows: `mvnw.cmd spring-boot:run`)
+3. Navegue para o diretório docker: `cd docker`
+4. Execute o arquivo docker compose para criar e inicializar o container MySQL: `docker compose up`
+5. Volte para o diretório inicial: `cd <caminho>`
+6. Construa o projeto: `./mvnw clean install` (para Windows: `mvnw.cmd clean install`)
+7. Execute a aplicação: `./mvnw spring-boot:run` (para Windows: `mvnw.cmd spring-boot:run`)
 
 ## Configuração
 
-- Atualize o arquivo `application.properties` com todas informações necessárias.
+- Antes de iniciar a aplicação, é necessário alterar algumas variáveis para que o JavaMailSender funcione. Você pode fazer isso navegando até o arquivo: `cd <caminho>/src/main/resources/application.properties`.
 
 ## Uso
 
-1. Ao iniciar o projeto, um usuário com a role de administrador é inserido no banco de dados automaticamente em `AdminDataLoader.java`. Suas informações podem ser alteradas tanto lá, quanto em `application.properties`.
-3. Além do usuário, as roles também são inseridas no banco de dados de acordo com os valores em `RoleEnum.java`, caso precise adicionar mais alguma, basta seguir o modelo do enum.
-2. Utilize um usuário com role de administrador para ter acesso aos endpoints protegidos.
+1. Ao iniciar o projeto, um usuário com a role de administrador é inserido no banco de dados automaticamente. Suas informações podem ser alteradas em `auth/src/main/resources/application.properties`.
+2. Além do usuário, as roles também são inseridas no banco de dados de acordo com os valores em `auth/src/main/java/com/api/auth/model/enums/RoleEnum.java`, caso precise adicionar mais alguma, basta seguir o modelo do enum.
+3. Utilize um usuário com role de administrador para ter acesso aos endpoints protegidos.
 
 ## Endpoints
 
@@ -65,6 +68,7 @@ Siga esses passos para executar o projeto na sua máquina:
 - `ADMIN Role` `GET /users`: Obtém todos usuários.
 - `ADMIN Role` `DELETE /users/{userId}`: Deleta um usuário.
 - `BASIC Role` `GET /users/{userId}`: Obtém um usuário de acordo com o ID.
+- `BASIC Role` `POST /users/change-password`: Muda a senha de um usuário.
 
 Acesse a documentação completa no endpoint `/swagger-ui.html`
 
