@@ -1,0 +1,11 @@
+services:
+  mysql:
+    container_name: 'auth-mysql'
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=auth_db'
+      - 'MYSQL_PASSWORD=123'
+      - 'MYSQL_ROOT_PASSWORD=123'
+      - 'MYSQL_USER=admin'
+    ports:
+      - '3306:3306'
