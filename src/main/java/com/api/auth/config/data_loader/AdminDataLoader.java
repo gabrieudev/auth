@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -38,12 +39,10 @@ public class AdminDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        for (RoleEnum roleEnum : RoleEnum.values()) {
-            Role role = new Role();
-            role.setId(roleEnum.getId());
-            role.setRole(roleEnum);
-            roleRepository.save(role);
-        }
+        Arrays.stream(RoleEnum.values()).map(
+                roleEnum -> new Role(roleEnum.getId(), roleEnum.getRole())
+        ).forEach(roleRepository::save);
+
         Optional<User> userOptional = userRepository.findByEmail(adminEmail);
         if (userOptional.isEmpty()) {
             User user = new User();
