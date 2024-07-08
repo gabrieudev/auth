@@ -51,7 +51,7 @@ public class UserService {
         }
 
         User user = mappingService.toModel(registerDTO);
-        Role role = roleRepository.findById(2L).orElseThrow();
+        Role role = roleRepository.findByRole("BASIC").orElseThrow();
         user.setPassword(bCryptPasswordEncoder.encode(registerDTO.getPassword()));
         user.setEnabled(false);
         user.setRoles(Set.of(role));

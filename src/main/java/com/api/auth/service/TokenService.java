@@ -1,5 +1,6 @@
 package com.api.auth.service;
 
+import com.api.auth.model.Role;
 import com.api.auth.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,7 @@ public class TokenService {
 
     public String generateToken(User user) {
         List<String> roles = user.getRoles().stream().map(
-                role -> role.getRole().getRole()
+                Role::getRole
         ).toList();
         String scopes = String.join(" ", roles);
         var claims = JwtClaimsSet.builder()
