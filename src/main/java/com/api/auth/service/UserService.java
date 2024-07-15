@@ -107,6 +107,7 @@ public class UserService {
         }
         String newEncryptedPassword = bCryptPasswordEncoder.encode(passwordDTO.getNewPassword());
         user.setPassword(newEncryptedPassword);
+        user.setUpdatedAt(Instant.now());
         userRepository.save(user);
     }
 
