@@ -1,6 +1,5 @@
 package com.api.auth.model;
 
-import com.api.auth.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Table(name = "tb_roles")
+@Table(name = "Roles")
 public class Role {
 
     @Id

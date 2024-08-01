@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @EqualsAndHashCode(of = "id")
-@Table(name = "tb_confirmation_tokens")
+@Table(name = "ConfirmationTokens")
 public class ConfirmationToken {
 
     @Id
@@ -22,16 +22,16 @@ public class ConfirmationToken {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column(nullable = false)
     private String token;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
     private Instant createdAt;
 
-    @Column(name = "expires_at", nullable = false)
+    @Column(nullable = false)
     private Instant expiresAt;
 
 }
