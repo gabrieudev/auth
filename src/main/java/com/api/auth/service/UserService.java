@@ -25,9 +25,6 @@ import java.util.UUID;
 public class UserService {
 
     @Autowired
-    private MappingService mappingService;
-
-    @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
@@ -50,7 +47,7 @@ public class UserService {
             throw new UserAlreadyExistsException("User already exists");
         }
 
-        User user = mappingService.toModel(registerDTO);
+        User user = new User(registerDTO);
         Role role = roleRepository.findByRole("BASIC").orElseThrow();
         user.setPassword(bCryptPasswordEncoder.encode(registerDTO.getPassword()));
         user.setEnabled(false);
@@ -76,9 +73,8 @@ public class UserService {
     }
 
     public TokenDTO login(LoginDTO loginDTO) {
-        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(
-                () -> new BadCredentialsException("Invalid email")
-        );
+        User user = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email"));
         if (!bCryptPasswordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
@@ -87,9 +83,8 @@ public class UserService {
     }
 
     public void confirmEmail(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token).orElseThrow(
-                () -> new EntityNotFoundException("Token not found")
-        );
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new EntityNotFoundException("Token not found"));
         User user = confirmationToken.getUser();
         if (confirmationToken.getExpiresAt().isBefore(Instant.now())) {
             throw new AccessDeniedException("Token expired");
@@ -99,9 +94,8 @@ public class UserService {
     }
 
     public void changePassword(PasswordDTO passwordDTO) {
-        User user = userRepository.findByEmail(passwordDTO.getEmail()).orElseThrow(
-                () -> new BadCredentialsException("Invalid email")
-        );
+        User user = userRepository.findByEmail(passwordDTO.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email"));
         if (!bCryptPasswordEncoder.matches(passwordDTO.getCurrentPassword(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
@@ -112,23 +106,20 @@ public class UserService {
     }
 
     public UserDTO getById(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with this id: " + userId)
-        );
-        return mappingService.toDto(user);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with this id: " + userId));
+        return new UserDTO(user);
     }
 
     public void delete(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with this id: " + userId)
-        );
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with this id: " + userId));
         userRepository.delete(user);
     }
 
     public Page<UserDTO> getAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(
-                user -> mappingService.toDto(user)
-        );
+        return userRepository.findAll(pageable)
+                .map(UserDTO::new);
     }
 
 }

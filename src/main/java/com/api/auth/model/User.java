@@ -1,10 +1,12 @@
 package com.api.auth.model;
 
+import com.api.auth.dto.RegisterDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -48,5 +50,10 @@ public class User {
 
     @Column(nullable = false)
     private boolean enabled;
+
+    public User(RegisterDTO registerDTO) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(registerDTO, this);
+    }
 
 }

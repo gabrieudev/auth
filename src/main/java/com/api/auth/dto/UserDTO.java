@@ -1,8 +1,10 @@
 package com.api.auth.dto;
 
 import com.api.auth.model.Role;
+import com.api.auth.model.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.time.Instant;
 import java.util.Set;
@@ -27,5 +29,10 @@ public class UserDTO {
     private Instant updatedAt;
 
     private boolean enabled;
+
+    public UserDTO(User user) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(user, this);
+    }
 
 }

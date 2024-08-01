@@ -39,9 +39,9 @@ public class AdminDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Arrays.stream(RoleEnum.values()).map(
-                roleEnum -> new Role(roleEnum.getId(), roleEnum.getRole())
-        ).forEach(roleRepository::save);
+        Arrays.stream(RoleEnum.values())
+                .map(roleEnum -> new Role(roleEnum.getId(), roleEnum.getRole()))
+                .forEach(roleRepository::save);
 
         Optional<User> userOptional = userRepository.findByEmail(adminEmail);
         if (userOptional.isEmpty()) {

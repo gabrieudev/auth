@@ -22,9 +22,9 @@ public class TokenService {
     private JwtEncoder jwtEncoder;
 
     public String generateToken(User user) {
-        List<String> roles = user.getRoles().stream().map(
-                Role::getRole
-        ).toList();
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getRole)
+                .toList();
         String scopes = String.join(" ", roles);
         var claims = JwtClaimsSet.builder()
                 .subject(user.getId().toString())
