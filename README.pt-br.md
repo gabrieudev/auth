@@ -40,15 +40,12 @@ O projeto foi criado para faciltar o processo de autenticação e autorização 
 
 ## Iniciando
 
-Siga esses passos para executar o projeto na sua máquina:
+Siga esses passos para executar o projeto na sua máquina (necessário ter o docker instalado):
 
 1. Clone o repositório: `git clone https://github.com/gabrieudev/auth.git`
 2. Navegue para o diretório do projeto: `cd <caminho>`
-3. Navegue para o diretório docker: `cd docker`
-4. Execute o arquivo docker compose para criar e inicializar o container MySQL: `docker compose up`
-5. Volte para o diretório inicial: `cd <caminho>`
-6. Construa o projeto: `./mvnw clean install` (para Windows: `mvnw.cmd clean install`)
-7. Execute a aplicação: `./mvnw spring-boot:run` (para Windows: `mvnw.cmd spring-boot:run`)
+3. Construa o projeto: `./mvnw clean install` (para Windows: `mvnw.cmd clean install`)
+4. Execute a aplicação: `./mvnw spring-boot:run` (para Windows: `mvnw.cmd spring-boot:run`)
 
 ## Configuração
 
