@@ -1,4 +1,4 @@
-package com.api.auth.config.data_loader;
+package com.api.auth.config.database;
 
 import com.api.auth.model.Role;
 import com.api.auth.model.User;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Configuration
 @Transactional
-public class AdminDataLoader implements CommandLineRunner {
+public class DataLoader implements CommandLineRunner {
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -28,14 +28,18 @@ public class AdminDataLoader implements CommandLineRunner {
     @Value("${admin.password}")
     private String adminPassword;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final RoleRepository roleRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    private RoleRepository roleRepository;
+    public DataLoader(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {

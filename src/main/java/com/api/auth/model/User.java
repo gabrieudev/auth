@@ -2,22 +2,23 @@ package com.api.auth.model;
 
 import com.api.auth.dto.RegisterDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 import org.modelmapper.ModelMapper;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "id")
 @Table(name = "Users")
 public class User {
 
@@ -40,6 +41,7 @@ public class User {
             joinColumns = @JoinColumn(name = "userId"),
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
+    @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)
@@ -56,4 +58,25 @@ public class User {
         modelMapper.map(registerDTO, this);
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy hibernateProxy)
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy hibernateProxy)
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        if (!(o instanceof User that)) return false;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (this instanceof HibernateProxy hibernateProxy)
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
+    }
 }

@@ -18,12 +18,16 @@ public class TokenService {
     @Value("${spring.application.name}")
     private String issuer;
 
+    private final JwtEncoder jwtEncoder;
+
     @Autowired
-    private JwtEncoder jwtEncoder;
+    public TokenService(JwtEncoder jwtEncoder) {
+        this.jwtEncoder = jwtEncoder;
+    }
 
     public String generateToken(User user) {
         List<String> roles = user.getRoles().stream()
-                .map(Role::getRole)
+                .map(Role::getName)
                 .toList();
         String scopes = String.join(" ", roles);
         var claims = JwtClaimsSet.builder()

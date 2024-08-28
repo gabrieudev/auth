@@ -24,23 +24,27 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+
+    private final UserRepository userRepository;
+
+    private final EmailService emailService;
+
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final TokenService tokenService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ConfirmationTokenRepository confirmationTokenRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    private TokenService tokenService;
+    public UserService(RoleRepository roleRepository, UserRepository userRepository, EmailService emailService, ConfirmationTokenRepository confirmationTokenRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TokenService tokenService) {
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.tokenService = tokenService;
+    }
 
     public void register(RegisterDTO registerDTO) {
         if (userRepository.existsByEmail(registerDTO.getEmail())) {
@@ -48,7 +52,7 @@ public class UserService {
         }
 
         User user = new User(registerDTO);
-        Role role = roleRepository.findByRole("BASIC").orElseThrow();
+        Role role = roleRepository.findByName("BASIC").orElseThrow();
         user.setPassword(bCryptPasswordEncoder.encode(registerDTO.getPassword()));
         user.setEnabled(false);
         user.setRoles(Set.of(role));

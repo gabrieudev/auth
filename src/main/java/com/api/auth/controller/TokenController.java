@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class TokenController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public TokenController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(
             summary = "Login",
