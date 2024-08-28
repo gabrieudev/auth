@@ -10,6 +10,7 @@ import com.api.auth.repository.ConfirmationTokenRepository;
 import com.api.auth.repository.RoleRepository;
 import com.api.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +24,9 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+
+    @Value("${app.base_url}")
+    private String baseUrl;
 
     private final RoleRepository roleRepository;
 
@@ -67,7 +71,7 @@ public class UserService {
         confirmationToken.setExpiresAt(Instant.now().plusSeconds(600));
         confirmationTokenRepository.save(confirmationToken);
 
-        String link = "http://localhost:8080/api/users/confirm?token=" + confirmationToken.getToken();
+        String link = baseUrl + "/users/confirm?token=" + confirmationToken.getToken();
         Email email = new Email(
                 user.getEmail(),
                 "Email confirm",
