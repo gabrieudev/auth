@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,5 +99,27 @@ public class RoleController {
     public ResponseEntity<Page<RoleDTO>> getAll(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(roleService.getAll(pageable));
     }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @Operation(
+        summary = "Delete role",
+        description = "Delete role",
+        tags = "Roles"
+    )
+    @DeleteMapping("/{UUID}")
+    public ResponseEntity<Void> delete(@PathVariable("UUID") UUID id) {
+        roleService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
     
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PutMapping
+    @Operation(
+        summary = "Update role",
+        description = "Update role",
+        tags = "Roles"
+    )
+    public ResponseEntity<RoleDTO> update(@Valid @RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.update(roleDTO));
+    }
 }
