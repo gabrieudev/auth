@@ -62,6 +62,16 @@ public class UserController {
                 description = "Usuário cadastrado"
             ),
             @ApiResponse(
+                responseCode = "406",
+                description = "Informações inválidas",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
                 responseCode = "409",
                 description = "Usuário existente",
                 content = @Content(
@@ -218,6 +228,16 @@ public class UserController {
             @ApiResponse(
                 responseCode = "404",
                 description = "Usuário não encontrado",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "406",
+                description = "Informações inválidas",
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(

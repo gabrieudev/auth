@@ -64,6 +64,26 @@ public class RoleController {
                 )
             ),
             @ApiResponse(
+                responseCode = "409",
+                description = "Informações inválidas",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "406",
+                description = "Role já cadastrada",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
                 responseCode = "500",
                 description = "Erro interno",
                 content = @Content(
@@ -107,6 +127,26 @@ public class RoleController {
             @ApiResponse(
                 responseCode = "404",
                 description = "Role não encontrada",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "406",
+                description = "Role já cadastrada",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "409",
+                description = "Informações inválidas",
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(

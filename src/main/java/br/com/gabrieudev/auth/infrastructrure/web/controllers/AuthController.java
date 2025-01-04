@@ -69,6 +69,16 @@ public class AuthController {
                 )
             ),
             @ApiResponse(
+                responseCode = "409",
+                description = "Credenciais inválidas",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
                 responseCode = "500",
                 description = "Erro interno",
                 content = @Content(
