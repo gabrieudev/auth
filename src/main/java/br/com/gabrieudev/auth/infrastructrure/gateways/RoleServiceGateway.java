@@ -84,4 +84,10 @@ public class RoleServiceGateway implements RoleGateway {
             .map(RoleModel::toDomainObj)
             .orElseThrow(() -> new EntityNotFoundException("Role não encontrada"));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByName(String name) {
+        return roleRepository.existsByName(name);
+    }
 }

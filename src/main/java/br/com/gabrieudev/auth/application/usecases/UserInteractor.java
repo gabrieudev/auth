@@ -43,9 +43,9 @@ public class UserInteractor {
     }
 
     public User update(User user) {
-        var userFromDB = userGateway.findById(user.getId());
+        User userToUpdate = userGateway.findById(user.getId());
 
-        if (!userFromDB.getEmail().equals(user.getEmail()) && userGateway.existsByEmail(user.getEmail())) {
+        if (!userToUpdate.getEmail().equals(user.getEmail()) && userGateway.existsByEmail(user.getEmail())) {
             throw new EntityAlreadyExistsException("E-mail já cadastrado");
         }
 

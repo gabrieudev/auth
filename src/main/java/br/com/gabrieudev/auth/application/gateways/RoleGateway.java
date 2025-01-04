@@ -11,6 +11,7 @@ public interface RoleGateway {
     Role findById(UUID id);
     Role findByName(String name);
     boolean existsById(UUID id);
+    boolean existsByName(String name);
     void delete(UUID id);
     List<Role> getAllRoles(Integer page, Integer size);
     List<Role> getAllRolesByUserId(UUID userId);

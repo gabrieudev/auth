@@ -26,4 +26,6 @@ public interface RoleRepository extends JpaRepository<RoleModel, UUID> {
     List<RoleModel> findAllRolesByUserId(@Param("userId") UUID userId);
 
     Optional<RoleModel> findByName(String name);
+
+    boolean existsByName(String name);
 }

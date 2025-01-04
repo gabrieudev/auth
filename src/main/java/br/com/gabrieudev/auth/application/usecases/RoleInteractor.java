@@ -3,6 +3,7 @@ package br.com.gabrieudev.auth.application.usecases;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.gabrieudev.auth.application.exceptions.EntityAlreadyExistsException;
 import br.com.gabrieudev.auth.application.gateways.RoleGateway;
 import br.com.gabrieudev.auth.domain.entities.Role;
 
@@ -18,10 +19,19 @@ public class RoleInteractor {
     }
 
     public Role save(Role role) {
+        if (existsByName(role.getName())) {
+            throw new EntityAlreadyExistsException("Role já cadastrada com esse nome");
+        }
         return roleGateway.save(role);
     }
 
     public Role update(Role role) {
+        Role roleToUpdate = roleGateway.findById(role.getId());
+
+        if (!roleToUpdate.getName().equals(role.getName()) && existsByName(role.getName())) {
+            throw new EntityAlreadyExistsException("Role já cadastrada com esse nome");
+        }
+
         return roleGateway.update(role);
     }
 
@@ -31,6 +41,10 @@ public class RoleInteractor {
 
     public boolean existsById(UUID id) {
         return roleGateway.existsById(id);
+    }
+
+    public boolean existsByName(String name) {
+        return roleGateway.existsByName(name);
     }
 
     public List<Role> getAllRoles(Integer page, Integer size) {
