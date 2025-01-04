@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.usecases.RoleInteractor;
+import br.com.gabrieudev.auth.infrastructrure.web.dtos.CreateRoleDTO;
 import br.com.gabrieudev.auth.infrastructrure.web.dtos.RoleDTO;
+import br.com.gabrieudev.auth.infrastructrure.web.dtos.UpdateRoleDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,9 +79,9 @@ public class RoleController {
     public ResponseEntity<RoleDTO> save(
         @Valid
         @RequestBody
-        RoleDTO roleDTO
+        CreateRoleDTO createRoleDTO
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(RoleDTO.from(roleInteractor.save(roleDTO.toDomainObj())));
+        return ResponseEntity.status(HttpStatus.CREATED).body(RoleDTO.from(roleInteractor.save(createRoleDTO.toDomainObj())));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -128,9 +130,9 @@ public class RoleController {
     public ResponseEntity<RoleDTO> update(
         @Valid
         @RequestBody
-        RoleDTO roleDTO
+        UpdateRoleDTO updateRoleDTO
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(RoleDTO.from(roleInteractor.update(roleDTO.toDomainObj())));
+        return ResponseEntity.status(HttpStatus.OK).body(RoleDTO.from(roleInteractor.update(updateRoleDTO.toDomainObj())));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -240,7 +242,7 @@ public class RoleController {
     @ApiResponses(
         value = {
             @ApiResponse(
-                responseCode = "200",
+                responseCode = "204",
                 description = "Role deletada"
             ),
             @ApiResponse(

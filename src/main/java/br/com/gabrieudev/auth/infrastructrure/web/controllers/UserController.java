@@ -24,7 +24,9 @@ import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.usecases.UserInteractor;
 import br.com.gabrieudev.auth.application.usecases.UsersRolesInteractor;
 import br.com.gabrieudev.auth.domain.entities.Role;
+import br.com.gabrieudev.auth.infrastructrure.web.dtos.CreateUserDTO;
 import br.com.gabrieudev.auth.infrastructrure.web.dtos.RoleDTO;
+import br.com.gabrieudev.auth.infrastructrure.web.dtos.UpdateUserDTO;
 import br.com.gabrieudev.auth.infrastructrure.web.dtos.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,9 +87,9 @@ public class UserController {
     public ResponseEntity<UserDTO> signup(
         @Valid 
         @RequestBody 
-        UserDTO userDTO
+        CreateUserDTO createUserDTO
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.from(userInteractor.signup(userDTO.toDomainObj())));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.from(userInteractor.signup(createUserDTO.toDomainObj())));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_USER')")
@@ -249,9 +251,9 @@ public class UserController {
     public ResponseEntity<UserDTO> update(
         @Valid 
         @RequestBody 
-        UserDTO userDTO
+        UpdateUserDTO updateUserDTO
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(userInteractor.update(userDTO.toDomainObj())));
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(userInteractor.update(updateUserDTO.toDomainObj())));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_USER')")
@@ -264,7 +266,7 @@ public class UserController {
     @ApiResponses(
         value = {
             @ApiResponse(
-                responseCode = "200",
+                responseCode = "204",
                 description = "Usuário deletado"
             ),
             @ApiResponse(
@@ -389,7 +391,7 @@ public class UserController {
     @ApiResponses(
         value = {
             @ApiResponse(
-                responseCode = "201",
+                responseCode = "204",
                 description = "Role desassociada ao usuário"
             ),
             @ApiResponse(
