@@ -1,8 +1,9 @@
 package br.com.gabrieudev.auth.domain.entities;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Role {
+public class Role implements Serializable {
     private UUID id;
     private String name;
     private String description;

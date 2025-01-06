@@ -3,6 +3,8 @@ package br.com.gabrieudev.auth.infrastructrure.gateways;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class RoleServiceGateway implements RoleGateway {
     }
 
     @Override
+    @CacheEvict(value = "Roles", key = "#role.id")
     @Transactional
     public Role update(Role role) {
         if (!roleRepository.existsById(role.getId())) {
@@ -37,6 +40,7 @@ public class RoleServiceGateway implements RoleGateway {
     }
 
     @Override
+    @CacheEvict(value = "Roles", key = "#id")
     @Transactional
     public void delete(UUID id) {
         if (!roleRepository.existsById(id)) {
@@ -46,6 +50,7 @@ public class RoleServiceGateway implements RoleGateway {
     }
 
     @Override
+    @Cacheable(value = "Roles", key = "#id")
     @Transactional(readOnly = true)
     public Role findById(UUID id) {
         return roleRepository.findById(id)
@@ -72,6 +77,7 @@ public class RoleServiceGateway implements RoleGateway {
     }
 
     @Override
+    @CacheEvict(value = "Roles", key = "#role.id")
     @Transactional
     public Role save(Role role) {
         return roleRepository.save(RoleModel.from(role)).toDomainObj();

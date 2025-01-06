@@ -3,6 +3,8 @@ package br.com.gabrieudev.auth.infrastructrure.gateways;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -29,6 +31,7 @@ public class UserServiceGateway implements UserGateway {
     }
 
     @Override
+    @CacheEvict(value = "Users", key = "#id")
     @Transactional
     public void delete(UUID id) {
         if (!existsById(id)) {
@@ -58,6 +61,7 @@ public class UserServiceGateway implements UserGateway {
     }
 
     @Override
+    @Cacheable(value = "Users", key = "#id")
     @Transactional(readOnly = true)
     public User findById(UUID id) {
         return userRepository.findById(id)
@@ -84,12 +88,14 @@ public class UserServiceGateway implements UserGateway {
     }
 
     @Override
+    @CacheEvict(value = "Users", key = "#user.id")
     @Transactional
     public User signup(User user) {
         return userRepository.save(UserModel.fromDomainObj(user)).toDomainObj();
     }
 
     @Override
+    @CacheEvict(value = "Users", key = "#user.id")
     @Transactional
     public User update(User user) {
         if (!existsById(user.getId())) {
