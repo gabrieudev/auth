@@ -1,0 +1,69 @@
+package br.com.gabrieudev.auth.application.services;
+
+import java.util.List;
+import java.util.UUID;
+
+import br.com.gabrieudev.auth.application.exceptions.AlreadyExistsException;
+import br.com.gabrieudev.auth.application.exceptions.BusinessRuleException;
+import br.com.gabrieudev.auth.application.exceptions.InternalErrorException;
+import br.com.gabrieudev.auth.application.exceptions.NotFoundException;
+import br.com.gabrieudev.auth.application.ports.input.RoleInputPort;
+import br.com.gabrieudev.auth.application.ports.output.RoleOutputPort;
+import br.com.gabrieudev.auth.application.ports.output.UserRoleOutputPort;
+import br.com.gabrieudev.auth.domain.Role;
+
+public class RoleService implements RoleInputPort {
+    private final RoleOutputPort roleOutputPort;
+    private final UserRoleOutputPort userRoleOutputPort;
+
+    public RoleService(RoleOutputPort roleOutputPort, UserRoleOutputPort userRoleOutputPort) {
+        this.roleOutputPort = roleOutputPort;
+        this.userRoleOutputPort = userRoleOutputPort;
+    }
+
+    @Override
+    public Role create(Role role) {
+        if (roleOutputPort.existsByName(role.getName())) {
+            throw new AlreadyExistsException("Já existe um papel com esse nome.");
+        }
+
+        return roleOutputPort.create(role)
+                .orElseThrow(() -> new InternalErrorException("Erro ao criar papel."));
+    }
+
+    @Override
+    public void delete(UUID id) {
+        if (userRoleOutputPort.existsByRoleId(id)) {
+            throw new BusinessRuleException("Este papel possui usuários vinculados.");
+        }
+
+        if (!roleOutputPort.delete(id)) {
+            throw new InternalErrorException("Erro ao deletar papel.");
+        }
+    }
+
+    @Override
+    public List<Role> findAll(UUID userId, String name) {
+        return roleOutputPort.findAll(userId, name);
+    }
+
+    @Override
+    public Role findById(UUID id) {
+        return roleOutputPort.findById(id)
+                .orElseThrow(() -> new InternalErrorException("Papel não encontrado."));
+    }
+
+    @Override
+    public Role update(Role role) {
+        if (!roleOutputPort.existsById(role.getId())) {
+            throw new NotFoundException("Papel não encontrado.");
+        }
+
+        if (roleOutputPort.existsByName(role.getName()) && !role.getName().equals(roleOutputPort.findById(role.getId()).get().getName())) {
+            throw new AlreadyExistsException("Já existe um papel com esse nome.");
+        }
+
+        return roleOutputPort.update(role)
+                .orElseThrow(() -> new InternalErrorException("Erro ao atualizar papel."));
+    }
+}
