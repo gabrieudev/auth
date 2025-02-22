@@ -1,0 +1,505 @@
+package br.com.gabrieudev.auth.adapters.input.rest.controllers;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.CreateUserDTO;
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UpdateUserDTO;
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UserDTO;
+import br.com.gabrieudev.auth.application.exceptions.StandardException;
+import br.com.gabrieudev.auth.application.ports.input.UserInputPort;
+import br.com.gabrieudev.auth.domain.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
+@RestController
+@CrossOrigin
+@RequestMapping("/users")
+public class UserController {
+    private final UserInputPort userInputPort;
+    @Value("${frontend.base-url}")
+    private String frontendUrl;
+
+    public UserController(UserInputPort userInputPort) {
+        this.userInputPort = userInputPort;
+    }
+
+    @Operation(
+        summary = "Cadastrar usuário",
+        description = "Endpoint para cadastro de um usuário.",
+        tags = { "User" }
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "201",
+                description = "Usuário cadastrado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "406",
+                description = "Requisição inválida.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "409",
+                description = "Usuário já cadastrado.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PostMapping
+    public ResponseEntity<UserDTO> create(
+        @Valid
+        @RequestBody 
+        CreateUserDTO user
+    ) {
+        User createdUser = userInputPort.create(user.toDomainObj());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.from(createdUser));
+    }
+
+    @Operation(
+        summary = "Atualizar usuário",
+        description = "Endpoint para atualização de um usuário.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Usuário atualizado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Usuário não encontrado.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "406",
+                description = "Requisição inválida.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @PutMapping
+    public ResponseEntity<UserDTO> update(
+        @Valid
+        @RequestBody 
+        UpdateUserDTO user
+    ) {
+        User updatedUser = userInputPort.update(user.toDomainObj());
+
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(updatedUser));
+    }
+
+    @Operation(
+        summary = "Listar usuários",
+        description = "Endpoint para listagem de usuários.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Usuários listados com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }           
+    )
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @GetMapping
+    public ResponseEntity<Page<UserDTO>> findAll(
+        @Schema(
+            name = "email",
+            description = "E-mail do usuário",
+            example = "joao@gmail.com"
+        )
+        @RequestParam(required = false) String email,
+        
+        @Schema(
+            name = "param",
+            description = "Parâmetro de busca",
+            example = "Maria"
+        )
+        @RequestParam(required = false) String param,
+        
+        @Schema(
+            name = "page",
+            description = "Página",
+            example = "1"
+        )
+        @RequestParam(required = true) Integer page,
+        
+        @Schema(
+            name = "size",
+            description = "Quantidade de registros por página",
+            example = "10"
+        )
+        @RequestParam(required = true) Integer size
+    ) {
+        List<UserDTO> users = userInputPort.findAll(param, email, page, size)
+            .stream()
+            .map(UserDTO::from)
+            .toList();
+
+        Page<UserDTO> usersPage = new PageImpl<>(users, PageRequest.of(page, size), size);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usersPage);
+    }
+
+    @Operation(
+        summary = "Obter usuário logado",
+        description = "Endpoint para obter o usuário logado.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Usuário logado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(
+        HttpServletRequest request
+    ) {
+        String token = request.getHeader("Authorization").split(" ")[1];
+
+        User user = userInputPort.getMe(token);
+
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(user));
+    }
+
+    @Operation(
+        summary = "Obter usuário",
+        description = "Endpoint para obter um usuário.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Usuário obtido com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Usuário não encontrado.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> findById(
+        @Schema(
+            description = "ID do usuário",
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        @PathVariable UUID id
+    ) {
+        User user = userInputPort.findById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(user));
+    }
+
+    @Operation(
+        summary = "Confirmar e-mail",
+        description = "Endpoint para confirmar e-mail.",
+        tags = { "User" }
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "E-mail confirmado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Código de confirmação inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @GetMapping("/confirm")
+    public void confirmEmail(
+        @Schema(
+            name = "code",
+            description = "Código de confirmação",
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        @RequestParam(required = true) UUID code,
+
+        HttpServletResponse response
+    ) {
+        userInputPort.confirmEmail(code);
+        
+        response.setHeader("Location", frontendUrl);
+        response.setStatus(HttpStatus.FOUND.value());
+    }
+
+    @Operation(
+        summary = "Enviar e-mail de confirmação",
+        description = "Endpoint para enviar e-mail de confirmação.",
+        tags = { "User" }
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "E-mail enviado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token invático.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Código de confirmação invático.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PostMapping("/{id}/email")
+    public ResponseEntity<Void> sendConfirmationEmail(
+        @Schema(
+            description = "ID do usuário",
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        @PathVariable UUID id
+    ) {
+        userInputPort.sendConfirmationEmail(id);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(
+        summary = "Deletar usuário",
+        description = "Endpoint para deletar um usuário.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "204",
+                description = "Usuário deletado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Token inválido.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = StandardException.class
+                    )
+                )
+            )
+        }
+    )
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+        @Schema(
+            description = "ID do usuário",
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        @PathVariable UUID id
+    ) {
+        userInputPort.delete(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+}
