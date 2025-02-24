@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.CreateUserDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UpdateUserDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UserDTO;
-import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.ports.input.UserInputPort;
 import br.com.gabrieudev.auth.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,45 +62,27 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Requisição inválida."
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Usuário já cadastrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário já cadastrado."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PostMapping
-    public ResponseEntity<UserDTO> create(
+    public ResponseEntity<ApiResponseDTO<UserDTO>> create(
         @Valid
         @RequestBody 
         CreateUserDTO user
     ) {
         User createdUser = userInputPort.create(user.toDomainObj());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.from(createdUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.created(UserDTO.from(createdUser)));
     }
 
     @Operation(
@@ -127,46 +109,28 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário não encontrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário não encontrado."
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Requisição inválida."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @PutMapping
-    public ResponseEntity<UserDTO> update(
+    public ResponseEntity<ApiResponseDTO<UserDTO>> update(
         @Valid
         @RequestBody 
         UpdateUserDTO user
     ) {
         User updatedUser = userInputPort.update(user.toDomainObj());
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(updatedUser));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(updatedUser)));
     }
 
     @Operation(
@@ -193,19 +157,13 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }           
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<UserDTO>> findAll(
+    public ResponseEntity<ApiResponseDTO<Page<UserDTO>>> findAll(
         @Schema(
             name = "email",
             description = "E-mail do usuário",
@@ -241,7 +199,7 @@ public class UserController {
 
         Page<UserDTO> usersPage = new PageImpl<>(users, PageRequest.of(page, size), size);
 
-        return ResponseEntity.status(HttpStatus.OK).body(usersPage);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(usersPage));
     }
 
     @Operation(
@@ -258,36 +216,24 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Token inválido.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Token inválido."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getMe(
+    public ResponseEntity<ApiResponseDTO<UserDTO>> getMe(
         HttpServletRequest request
     ) {
         String token = request.getHeader("Authorization").split(" ")[1];
 
         User user = userInputPort.getMe(token);
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(user));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(user)));
     }
 
     @Operation(
@@ -314,29 +260,17 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário não encontrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário não encontrado."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> findById(
+    public ResponseEntity<ApiResponseDTO<UserDTO>> findById(
         @Schema(
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -345,7 +279,7 @@ public class UserController {
     ) {
         User user = userInputPort.findById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.from(user));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(user)));
     }
 
     @Operation(
@@ -357,7 +291,13 @@ public class UserController {
         value = {
             @ApiResponse(
                 responseCode = "200",
-                description = "E-mail confirmado com sucesso."
+                description = "E-mail confirmado com sucesso.",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        implementation = Void.class
+                    )
+                )
             ),
             @ApiResponse(
                 responseCode = "404",
@@ -365,7 +305,7 @@ public class UserController {
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                        implementation = StandardException.class
+                        implementation = ApiResponseDTO.class
                     )
                 )
             ),
@@ -375,7 +315,7 @@ public class UserController {
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                        implementation = StandardException.class
+                        implementation = ApiResponseDTO.class
                     )
                 )
             )
@@ -410,39 +350,17 @@ public class UserController {
                 description = "E-mail enviado com sucesso."
             ),
             @ApiResponse(
-                responseCode = "401",
-                description = "Token invático.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = Void.class
-                    )
-                )
-            ),
-            @ApiResponse(
                 responseCode = "404",
-                description = "Código de confirmação invático.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Código de confirmação invático."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PostMapping("/{id}/email")
-    public ResponseEntity<Void> sendConfirmationEmail(
+    public ResponseEntity<ApiResponseDTO<String>> sendConfirmationEmail(
         @Schema(
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -451,7 +369,7 @@ public class UserController {
     ) {
         userInputPort.sendConfirmationEmail(id);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("E-mail enviado com sucesso."));
     }
 
     @Operation(
@@ -478,19 +396,13 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<ApiResponseDTO<String>> delete(
         @Schema(
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -499,7 +411,7 @@ public class UserController {
     ) {
         userInputPort.delete(id);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Usuário deletado com sucesso."));
     }
 
 }

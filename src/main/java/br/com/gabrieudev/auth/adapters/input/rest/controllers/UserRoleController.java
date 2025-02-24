@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.userrole.UserRoleDTO;
-import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.ports.input.UserRoleInputPort;
 import br.com.gabrieudev.auth.domain.UserRole;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,29 +57,17 @@ public class UserRoleController {
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Usuário já associado à role.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário já associado à role."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping("/{roleId}")
-    public ResponseEntity<UserRoleDTO> assign(
+    public ResponseEntity<ApiResponseDTO<UserRoleDTO>> assign(
         @Schema(
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -94,7 +82,7 @@ public class UserRoleController {
     ) {
         UserRole userRole = userRoleInputPort.assign(userId, roleId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserRoleDTO.from(userRole));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.ok(UserRoleDTO.from(userRole)));
     }
 
     @Operation(
@@ -121,29 +109,17 @@ public class UserRoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário ou role não encontrados.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário ou role não encontrados."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/{roleId}")
-    public ResponseEntity<Void> unassign(
+    public ResponseEntity<ApiResponseDTO<String>> unassign(
         @Schema(
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -158,6 +134,6 @@ public class UserRoleController {
     ) {
         userRoleInputPort.unassign(userId, roleId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Papel desassociado com sucesso."));
     }
 }

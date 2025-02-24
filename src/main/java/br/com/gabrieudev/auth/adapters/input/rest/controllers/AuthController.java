@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.LoginRequest;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.LoginResponse;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.RefreshTokenRequest;
-import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.ports.input.AuthInputPort;
 import br.com.gabrieudev.auth.domain.Tokens;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -51,28 +49,16 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "400",
-                description = "Usuário ou senha inválidos.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Usuário ou senha inválidos."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
+    public ResponseEntity<ApiResponseDTO<LoginResponse>> login(
         @Valid
         @RequestBody
         LoginRequest loginRequest
@@ -81,7 +67,7 @@ public class AuthController {
 
         LoginResponse loginResponse = new LoginResponse(tokens.getAccessToken(), tokens.getRefreshToken(), Instant.now().plusSeconds(refreshTokenExpiration * 60), Instant.now().plusSeconds(accessTokenExpiration * 60));
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(loginResponse));
     }
 
     @Operation(
@@ -97,35 +83,23 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Refresh token inválido.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Refresh token inválido."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
+    public ResponseEntity<ApiResponseDTO<String>> logout(
         @Valid
         @RequestBody
         RefreshTokenRequest refreshTokenRequest
     ) {
         authInputPort.logout(refreshTokenRequest.getRefreshToken());
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Logout realizado com sucesso."));
     }
 
     @Operation(
@@ -141,28 +115,16 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Refresh token inválido.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Refresh token inválido."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refresh(
+    public ResponseEntity<ApiResponseDTO<LoginResponse>> refresh(
         @Valid
         @RequestBody
         RefreshTokenRequest refreshTokenRequest
@@ -171,6 +133,6 @@ public class AuthController {
 
         LoginResponse loginResponse = new LoginResponse(tokens.getAccessToken(), tokens.getRefreshToken(), Instant.now().plusSeconds(refreshTokenExpiration * 60), Instant.now().plusSeconds(accessTokenExpiration * 60));
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(loginResponse));
     }
 }

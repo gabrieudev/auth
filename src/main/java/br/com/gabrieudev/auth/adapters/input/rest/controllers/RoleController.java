@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.role.CreateRoleDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.role.RoleDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.role.UpdateRoleDTO;
-import br.com.gabrieudev.auth.application.exceptions.StandardException;
 import br.com.gabrieudev.auth.application.ports.input.RoleInputPort;
 import br.com.gabrieudev.auth.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,46 +65,28 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Requisição inválida."
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel já criado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Papel já criado."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
-    public ResponseEntity<RoleDTO> create(
+    public ResponseEntity<ApiResponseDTO<RoleDTO>> create(
         @Valid
         @RequestBody
         CreateRoleDTO createRoleDTO
     ) {
         Role role = roleInputPort.create(createRoleDTO.toDomainObj());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(RoleDTO.from(role));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.created(RoleDTO.from(role)));
     }
 
     @Operation(
@@ -131,46 +113,28 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Papel não encontrado."
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel ja cadastrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Papel ja cadastrado."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PutMapping
-    public ResponseEntity<RoleDTO> update(
+    public ResponseEntity<ApiResponseDTO<RoleDTO>> update(
         @Valid
         @RequestBody
         UpdateRoleDTO updateRoleDTO    
     ) {
         Role role = roleInputPort.update(updateRoleDTO.toDomainObj());
 
-        return ResponseEntity.status(HttpStatus.OK).body(RoleDTO.from(role));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(RoleDTO.from(role)));
     }
 
     @Operation(
@@ -197,19 +161,13 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @GetMapping
-    public ResponseEntity<List<RoleDTO>> findAll(
+    public ResponseEntity<ApiResponseDTO<List<RoleDTO>>> findAll(
         @Schema(
             name = "userId",
             description = "ID do usuário",
@@ -229,7 +187,7 @@ public class RoleController {
             .map(RoleDTO::from)
             .toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(roles);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(roles));
     }
 
     @Operation(
@@ -256,29 +214,17 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )   
+                description = "Papel não encontrado."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<RoleDTO> findById(
+    public ResponseEntity<ApiResponseDTO<RoleDTO>> findById(
         @Schema(
             description = "ID do papel",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -287,7 +233,7 @@ public class RoleController {
     ) {
         Role role = roleInputPort.findById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(RoleDTO.from(role));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(RoleDTO.from(role)));
     }
 
     @Operation(
@@ -314,39 +260,21 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Papel não encontrado."
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel possui usuários associados.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Papel possui usuários associados."
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor.",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        implementation = StandardException.class
-                    )
-                )
+                description = "Erro interno do servidor."
             )
         }
     )
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<ApiResponseDTO<String>> delete(
         @Schema(
             description = "ID do papel",
             example = "123e4567-e89b-12d3-a456-426614174000"
@@ -355,6 +283,6 @@ public class RoleController {
     ) {
         roleInputPort.delete(id);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Papel excluido com sucesso."));
     }
 }

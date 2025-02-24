@@ -1,13 +1,13 @@
 package br.com.gabrieudev.auth.application.exceptions;
 
-import java.time.LocalDateTime;
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 
 public class InternalErrorException extends RuntimeException {
     public InternalErrorException(String message) {
         super(message);
     }
 
-    public StandardException toStandardException() {
-        return new StandardException(500, this.getMessage(), LocalDateTime.now());
+    public ApiResponseDTO<String> toApiResponse() {
+        return ApiResponseDTO.error(getMessage(), 500);
     }
 }
