@@ -65,15 +65,24 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida."
+                description = "Requisição inválida.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel já criado."
+                description = "Papel já criado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -113,15 +122,24 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado."
+                description = "Papel não encontrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel ja cadastrado."
+                description = "Papel ja cadastrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -161,7 +179,10 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -214,11 +235,17 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado."
+                description = "Papel não encontrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -260,15 +287,24 @@ public class RoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Papel não encontrado."
+                description = "Papel não encontrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Papel possui usuários associados."
+                description = "Papel possui usuários associados.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )

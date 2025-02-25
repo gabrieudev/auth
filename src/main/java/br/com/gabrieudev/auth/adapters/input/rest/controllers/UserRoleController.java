@@ -57,11 +57,17 @@ public class UserRoleController {
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Usuário já associado à role."
+                description = "Usuário já associado à role.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -109,11 +115,17 @@ public class UserRoleController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário ou role não encontrados."
+                description = "Usuário ou role não encontrados.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )

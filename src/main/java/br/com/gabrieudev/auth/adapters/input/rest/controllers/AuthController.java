@@ -18,6 +18,8 @@ import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.RefreshTokenRequest;
 import br.com.gabrieudev.auth.application.ports.input.AuthInputPort;
 import br.com.gabrieudev.auth.domain.Tokens;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -49,11 +51,17 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "400",
-                description = "Usuário ou senha inválidos."
+                description = "Usuário ou senha inválidos.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -83,11 +91,17 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Refresh token inválido."
+                description = "Refresh token inválido.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -115,11 +129,17 @@ public class AuthController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Refresh token inválido."
+                description = "Refresh token inválido.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )

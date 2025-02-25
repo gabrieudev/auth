@@ -62,15 +62,24 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida."
+                description = "Requisição inválida.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "409",
-                description = "Usuário já cadastrado."
+                description = "Usuário já cadastrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -109,15 +118,24 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário não encontrado."
+                description = "Usuário não encontrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "406",
-                description = "Requisição inválida."
+                description = "Requisição inválida.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -157,7 +175,10 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }           
     )
@@ -216,11 +237,17 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "401",
-                description = "Token inválido."
+                description = "Token inválido.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -260,11 +287,17 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Usuário não encontrado."
+                description = "Usuário não encontrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -351,11 +384,17 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "404",
-                description = "Código de confirmação invático."
+                description = "Código de confirmação invático.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
@@ -396,7 +435,10 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "500",
-                description = "Erro interno do servidor."
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
             )
         }
     )
