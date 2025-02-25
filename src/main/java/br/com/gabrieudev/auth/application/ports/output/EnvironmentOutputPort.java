@@ -4,4 +4,6 @@ public interface EnvironmentOutputPort {
     String getEmailConfirmationUrl();
     Integer getAccessTokenExpiration();
     Integer getRefreshTokenExpiration();
+    String getValidateResetPasswordUrl();
+    String getFrontendResetPasswordUrl();
 }

@@ -14,4 +14,7 @@ public interface UserInputPort {
     List<User> findAll(String email, String param, Integer page, Integer size);
     void confirmEmail(UUID code);
     void sendConfirmationEmail(UUID id);
+    void sendResetPasswordEmail(String token);
+    void validateResetPassword(UUID code);
+    void resetPassword(UUID code, String password);
 }

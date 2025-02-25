@@ -62,11 +62,14 @@ public class SecurityConfig {
                                 "/auth/login",
                                 "/auth/logout",
                                 "/auth/refresh",
-                                "/users/{id}/email")
+                                "/users/{id}/email",
+                                "/users/forgot-password",
+                                "/users/reset-password")
                         .permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
-                    "/users/confirm/**")
+                                "/users/confirm/**",
+                                "/users/validate-reset-password/**")
                         .permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",

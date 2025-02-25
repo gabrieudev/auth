@@ -99,7 +99,6 @@ public class UserService implements UserInputPort {
             throw new NotFoundException("Erro ao atualizar usuário.");
         }
 
-        user.setPassword(userOutputPort.hashPassword(user.getPassword()));
         user.setUpdatedAt(LocalDateTime.now());
 
         return userOutputPort.update(user)
@@ -139,7 +138,8 @@ public class UserService implements UserInputPort {
 
         String url = environmentOutputPort.getEmailConfirmationUrl() + "?code=" + code;
 
-        String emailMessage = String.format("Olá %s, clique no link abaixo para confirmar seu e-mail: %s", user.getFirstName(), url);
+        String emailMessage = String.format("Olá %s, clique no link abaixo para confirmar seu e-mail: %s",
+                user.getFirstName(), url);
 
         boolean isSent = emailOutputPort.sendEmail(user.getEmail(), "Confirmação de e-mail", emailMessage);
 
@@ -156,5 +156,60 @@ public class UserService implements UserInputPort {
 
         return authOutputPort.getUserByToken(token)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
+    }
+
+    @Override
+    public void validateResetPassword(UUID code) {
+        String userId = cacheOutputPort.get("code:" + code.toString())
+                .orElseThrow(() -> new NotFoundException("Código de redefinição de senha inválido."));
+
+        User user = userOutputPort.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
+
+        emailOutputPort.sendEmail(
+                user.getEmail(),
+                "Redefinição de senha",
+                "Sua senha foi redefinida com sucesso.");
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String token) {
+        User user = authOutputPort.getUserByToken(token)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
+
+        UUID code = UUID.randomUUID();
+
+        cacheOutputPort.set("code:" + code.toString(), user.getId().toString(), 5);
+
+        String url = environmentOutputPort.getValidateResetPasswordUrl() + "?code=" + code.toString();
+
+        String emailMessage = String.format("Olá %s, clique no link abaixo para redefinir sua senha: %s",
+                user.getFirstName(), url);
+
+        boolean isSent = emailOutputPort.sendEmail(user.getEmail(), "Redefinir senha", emailMessage);
+
+        if (!isSent) {
+            throw new EmailException("Erro ao enviar e-mail de redefinição de senha.");
+        }
+    }
+
+    @Override
+    public void resetPassword(UUID code, String password) {
+        String userId = cacheOutputPort.get("code:" + code.toString())
+                .orElseThrow(() -> new NotFoundException("Código de redefinição de senha inválido."));
+
+        User user = userOutputPort.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
+
+        user.setPassword(userOutputPort.hashPassword(password));
+
+        update(user);
+        
+        cacheOutputPort.delete("code:" + code.toString());
+
+        emailOutputPort.sendEmail(
+                user.getEmail(),
+                "Redefinição de senha",
+                "Sua senha foi redefinida com sucesso.");
     }
 }

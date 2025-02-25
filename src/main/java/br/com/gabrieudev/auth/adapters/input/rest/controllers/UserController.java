@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.CreateUserDTO;
+import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.ResetPasswordDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UpdateUserDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.user.UserDTO;
 import br.com.gabrieudev.auth.application.ports.input.UserInputPort;
@@ -44,6 +45,8 @@ public class UserController {
     private final UserInputPort userInputPort;
     @Value("${frontend.base-url}")
     private String frontendUrl;
+    @Value("${frontend.reset-password.url}")
+    private String frontendResetPasswordUrl;
 
     public UserController(UserInputPort userInputPort) {
         this.userInputPort = userInputPort;
@@ -456,4 +459,127 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Usuário deletado com sucesso."));
     }
 
+    @Operation(
+        summary = "Enviar e-mail de redefinição de senha",
+        description = "Endpoint para enviar e-mail de redefinição de senha.",
+        tags = { "User" },
+        security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "E-mail enviado com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Código de confirmação invático.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            )
+        }
+    )
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponseDTO<String>> resetPassword(
+        HttpServletRequest request,    
+
+        HttpServletResponse response
+    ) {
+        String token = request.getHeader("Authorization").split(" ")[1];
+
+        userInputPort.sendResetPasswordEmail(token);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("E-mail enviado com sucesso."));
+    }
+
+    @Operation(
+        summary = "Validar redefinição de senha",
+        description = "Endpoint para validar redefinição de senha.",
+        tags = { "User" }
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Usuário redirecionado para redefinição de senha."
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Código de confirmação invático.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            )
+        }
+    )
+    @GetMapping("/validate-reset-password")
+    public void validateResetPassword(
+        @Schema(
+            name = "code",
+            description = "Código de confirmação",
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        @RequestParam(required = true) UUID code,
+
+        HttpServletResponse response
+    ) {
+        userInputPort.validateResetPassword(code);
+
+        response.setHeader("Location", frontendResetPasswordUrl + "?code=" + code);
+        response.setStatus(HttpStatus.FOUND.value());
+    }
+
+    @Operation(
+        summary = "Redefinir senha",
+        description = "Endpoint para redefinir senha.",
+        tags = { "User" }
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Senha redefinida com sucesso."
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Código de confirmação invático.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Erro interno do servidor.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            )
+        }
+    )
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponseDTO<String>> resetPassword(
+        @Valid
+        @RequestBody
+        ResetPasswordDTO resetPasswordDTO
+    ) {
+        userInputPort.resetPassword(resetPasswordDTO.getCode(), resetPasswordDTO.getPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Senha redefinida com sucesso."));
+    }
 }
