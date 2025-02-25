@@ -63,7 +63,6 @@ public class SecurityConfig {
                                 "/auth/logout",
                                 "/auth/refresh",
                                 "/users/{id}/email",
-                                "/users/forgot-password",
                                 "/users/reset-password")
                         .permitAll()
                         .requestMatchers(
