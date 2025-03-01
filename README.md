@@ -17,13 +17,13 @@
 
 <p align="center">
  <a href="#structure">Project Structure</a> • 
- <a href="#getting-started">Getting Started</a> • 
+ <a href="#start">Getting Started</a> • 
  <a href="#routes">API Endpoints</a> •
  <a href="#contribute">Contribute</a>
 </p>
 
 <p align="center">
-  <b>This project was created to facilitate the process of user authentication and authorization, serving as a base to be reused in any Java REST API that requires such functionalities. Additionally, the API was developed following the principles of <a href=https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507>Hexagonal Architecture</a> and using the best and most updated market practices to ensure the integrity of sensitive data.</b>
+  <b>This project was created to simplify the user authentication and authorization process, serving as a base to be reused in any Java REST API requiring such functionalities. Additionally, the API was developed following <a href="https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507">Hexagonal Architecture</a> principles and the latest industry best practices, including 100% unit test coverage to ensure the integrity of sensitive data.</b>
 </p>
 
 <h2 id="structure">📂 Project Structure</h2>
@@ -50,7 +50,7 @@ src/main/java/br/com/gabrieudev/auth/
 └── AuthApplication.java # Application initializer
 ```
 
-<h2 id="getting-started">🚀 Getting Started</h2>
+<h2 id="start">🚀 Getting Started</h2>
 
 <h3>Prerequisites</h3>
 
@@ -66,47 +66,60 @@ git clone https://github.com/gabrieudev/auth.git
 
 <h3>Environment Variables</h3>
 
-To run the application, you will need to create a `.env` file in the root directory of the project, containing the following environment variables related to your Google account, which will be used to send notifications:
+To run the application, create a `.env` file in the project root directory with the following variables:
 
-```bash
-EMAIL_USERNAME=<EMAIL>
-EMAIL_PASSWORD=<APP_PASSWORD>
-```
+| Key                        | Default Value                 | Required | Description                                              |
+| -------------------------- | ----------------------------- | -------- | -------------------------------------------------------- |
+| `PROFILE`                  | dev                           | no       | Profile to run the application (dev or prod).            |
+| `DATASOURCE_URL`           | initialized in docker-compose | no       | Database connection URL.                                 |
+| `DATASOURCE_USERNAME`      | initialized in docker-compose | no       | Database username.                                       |
+| `DATASOURCE_PASSWORD`      | initialized in docker-compose | no       | Database password.                                       |
+| `REDIS_HOST`               | initialized in docker-compose | no       | Redis connection host.                                   |
+| `REDIS_PORT`               | initialized in docker-compose | no       | Redis connection port.                                   |
+| `REDIS_PASSWORD`           | initialized in docker-compose | no       | Redis password.                                          |
+| `EMAIL_HOST`               | Gmail host                    | no       | Email service host.                                      |
+| `EMAIL_PORT`               | Gmail port                    | no       | Email service port.                                      |
+| `EMAIL_USERNAME`           | none                          | yes      | Email for sending notifications through the application. |
+| `EMAIL_PASSWORD`           | none                          | yes      | App password.                                            |
+| `API_BASE_URL`             | Local URL                     | no       | API base URL.                                            |
+| `FRONTEND_BASE_URL`        | Swagger UI URL                | no       | Frontend URL for redirection.                            |
+| `ACCESS_TOKEN_EXPIRATION`  | 5                             | no       | Access token validity in minutes.                        |
+| `REFRESH_TOKEN_EXPIRATION` | 10080                         | no       | Refresh token validity in minutes.                       |
 
-> If you don't know how to obtain the app passwords, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=en) can help you.
+> If you don't know how to obtain app passwords, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=pt-BR) can assist you.
 
 <h3>Initializing</h3>
 
-How to initialize the project:
+Run the following commands:
 
 ```bash
 cd auth
-docker compose up -d
+docker compose up -d --build
 ```
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-You can now interact with the routes by accessing the [Swagger interface](http://localhost:8080/swagger-ui/index.html).
+You can now interact with the API routes via the [Swagger interface](http://localhost:8080/swagger-ui/index.html).
 
-Note: Once the application is initialized, an admin user is created in the database with the following information:
+Note: Upon initialization, an admin user is created in the database with the following credentials:
 
 ```yaml
 {... "email": "admin@gmail.com", "password": "adminpassword" ...}
 ```
 
-Use them to log in and access the routes protected against regular users.
+Use these to log in and access routes protected against regular users.
 
 <h2 id="contribute">📫 Contribute</h2>
 
-Contributions are very welcome! If you want to contribute, fork the repository and create a pull request.
+Contributions are highly welcome! To contribute, fork the repository and create a pull request.
 
 1. `git clone https://github.com/gabrieudev/auth.git`
 2. `git checkout -b feature/NAME`
-3. Follow the commit standards.
-4. Open a Pull Request explaining the issue resolved or the feature developed. If applicable, attach screenshots of visual modifications and wait for the review!
+3. Follow commit standards.
+4. Open a Pull Request explaining the resolved issue or developed feature. Include screenshots of visual changes if applicable, and await review!
 
-<h3>Documentation that may help</h3>
+<h3>Helpful Documentation</h3>
 
-[📝 How to create a Pull Request](https://www.atlassian.com/git/tutorials/making-a-pull-request)
+[📝 How to Create a Pull Request](https://www.atlassian.com/br/git/tutorials/making-a-pull-request)
 
-[💾 Commit Standards](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716)
+[💾 Commit Message Standards](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716)
