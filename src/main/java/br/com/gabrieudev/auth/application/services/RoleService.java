@@ -33,6 +33,10 @@ public class RoleService implements RoleInputPort {
 
     @Override
     public void delete(UUID id) {
+        if (!roleOutputPort.existsById(id)) {
+            throw new NotFoundException("Papel não encontrado.");
+        }
+
         if (userRoleOutputPort.existsByRoleId(id)) {
             throw new BusinessRuleException("Este papel possui usuários vinculados.");
         }
@@ -50,16 +54,14 @@ public class RoleService implements RoleInputPort {
     @Override
     public Role findById(UUID id) {
         return roleOutputPort.findById(id)
-                .orElseThrow(() -> new InternalErrorException("Papel não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Papel não encontrado."));
     }
 
     @Override
     public Role update(Role role) {
-        if (!roleOutputPort.existsById(role.getId())) {
-            throw new NotFoundException("Papel não encontrado.");
-        }
+        Role roleToUpdate = findById(role.getId());
 
-        if (roleOutputPort.existsByName(role.getName()) && !role.getName().equals(roleOutputPort.findById(role.getId()).get().getName())) {
+        if (!roleToUpdate.getName().equals(role.getName()) && roleOutputPort.existsByName(role.getName())) {
             throw new AlreadyExistsException("Já existe um papel com esse nome.");
         }
 
