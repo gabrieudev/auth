@@ -68,25 +68,25 @@ git clone https://github.com/gabrieudev/auth.git
 
 To run the application, create a `.env` file in the project root directory with the following variables:
 
-| Key                           | Default Value                                               | Required | Description                                                      |
-| ----------------------------- | ----------------------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `SERVER_PORT`                 | 8080                                                        | no       | server port.                                                     |
-| `PROFILE`                     | dev                                                         | no       | profile in which the application will run (dev or prod).         |
-| `DATASOURCE_URL`              | jdbc:postgresql://postgres:5432/auth                        | no       | database connection URL.                                         |
-| `DATASOURCE_USERNAME`         | admin                                                       | no       | database connection username.                                    |
-| `DATASOURCE_PASSWORD`         | admin                                                       | no       | database connection password.                                    |
-| `REDIS_HOST`                  | redis                                                       | no       | Redis connection host.                                           |
-| `REDIS_PORT`                  | 6379                                                        | no       | Redis connection port.                                           |
-| `REDIS_PASSWORD`              | admin                                                       | no       | Redis connection password.                                       |
-| `EMAIL_HOST`                  | smtp.gmail.com                                              | no       | email host for sending notifications.                            |
-| `EMAIL_PORT`                  | 587                                                         | no       | email port for sending notifications.                            |
-| `EMAIL_USERNAME`              | none                                                        | yes      | email for sending notifications through the application.         |
-| `EMAIL_PASSWORD`              | none                                                        | yes      | app password.                                                    |
-| `API_BASE_URL`                | http://localhost:{SERVER_PORT}/api/v1                       | no       | base URL of the API.                                             |
-| `FRONTEND_BASE_URL`           | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | no       | URL of some interface for redirection (Swagger as default).      |
-| `FRONTEND_RESET_PASSWORD_URL` | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | no       | URL of page for password reset in frontend (Swagger as default). |
-| `ACCESS_TOKEN_EXPIRATION`     | 5                                                           | no       | access token expiration time in minutes.                         |
-| `ACCESS_TOKEN_EXPIRATION`     | 10080                                                       | no       | refresh token expiration time in minutes.                        |
+| Key                           | Default Value                                               | Defined | Description                                                      |
+| ----------------------------- | ----------------------------------------------------------- | ------- | ---------------------------------------------------------------- |
+| `SERVER_PORT`                 | 8080                                                        | ✅      | server port.                                                     |
+| `PROFILE`                     | dev                                                         | ✅      | profile in which the application will run (dev or prod).         |
+| `DATASOURCE_URL`              | jdbc:postgresql://postgres:5432/auth                        | ✅      | database connection URL.                                         |
+| `DATASOURCE_USERNAME`         | admin                                                       | ✅      | database connection username.                                    |
+| `DATASOURCE_PASSWORD`         | admin                                                       | ✅      | database connection password.                                    |
+| `REDIS_HOST`                  | redis                                                       | ✅      | Redis connection host.                                           |
+| `REDIS_PORT`                  | 6379                                                        | ✅      | Redis connection port.                                           |
+| `REDIS_PASSWORD`              | admin                                                       | ✅      | Redis connection password.                                       |
+| `EMAIL_HOST`                  | smtp.gmail.com                                              | ✅      | email host for sending notifications.                            |
+| `EMAIL_PORT`                  | 587                                                         | ✅      | email port for sending notifications.                            |
+| `EMAIL_USERNAME`              | none                                                        | ❌      | email for sending notifications through the application.         |
+| `EMAIL_PASSWORD`              | none                                                        | ❌      | app password.                                                    |
+| `API_BASE_URL`                | http://localhost:{SERVER_PORT}/api/v1                       | ✅      | base URL of the API.                                             |
+| `FRONTEND_BASE_URL`           | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | ✅      | URL of some interface for redirection (Swagger as default).      |
+| `FRONTEND_RESET_PASSWORD_URL` | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | ✅      | URL of page for password reset in frontend (Swagger as default). |
+| `ACCESS_TOKEN_EXPIRATION`     | 5                                                           | ✅      | access token expiration time in minutes.                         |
+| `ACCESS_TOKEN_EXPIRATION`     | 10080                                                       | ❌      | refresh token expiration time in minutes.                        |
 
 > If you don't know how to obtain app password, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=pt-BR) can assist you.
 
