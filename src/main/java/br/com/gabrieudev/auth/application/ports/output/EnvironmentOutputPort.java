@@ -1,9 +1,8 @@
 package br.com.gabrieudev.auth.application.ports.output;
 
 public interface EnvironmentOutputPort {
-    String getEmailConfirmationUrl();
+    String getApiBaseUrl();
+    String getFrontendResetPasswordUrl();
     Integer getAccessTokenExpiration();
     Integer getRefreshTokenExpiration();
-    String getValidateResetPasswordUrl();
-    String getFrontendResetPasswordUrl();
 }

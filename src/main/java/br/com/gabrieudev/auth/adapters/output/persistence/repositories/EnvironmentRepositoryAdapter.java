@@ -7,20 +7,18 @@ import br.com.gabrieudev.auth.application.ports.output.EnvironmentOutputPort;
 
 @Component
 public class EnvironmentRepositoryAdapter implements EnvironmentOutputPort {
-    @Value("${api.email-confirmation.url}")
-    private String emailConfirmationUrl;
+    @Value("${api.base-url}")
+    private String apiBaseUrl;
     @Value("${jwt.access-token.minutes}")
     private Integer accessTokenExpiration;
     @Value("${jwt.refresh-token.minutes}")
     private Integer refreshTokenExpiration;
-    @Value("${api.validate-reset-password.url}")
-    private String validateResetPasswordUrl;
     @Value("${frontend.reset-password.url}")
     private String frontendResetPasswordUrl;
 
     @Override
-    public String getEmailConfirmationUrl() {
-        return emailConfirmationUrl;
+    public String getApiBaseUrl() {
+        return apiBaseUrl;
     }
 
     @Override
@@ -31,11 +29,6 @@ public class EnvironmentRepositoryAdapter implements EnvironmentOutputPort {
     @Override
     public Integer getRefreshTokenExpiration() {
         return refreshTokenExpiration;
-    }
-
-    @Override
-    public String getValidateResetPasswordUrl() {
-        return validateResetPasswordUrl;
     }
 
     @Override

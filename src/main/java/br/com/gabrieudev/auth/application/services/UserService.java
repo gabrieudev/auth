@@ -136,7 +136,7 @@ public class UserService implements UserInputPort {
             throw new InternalErrorException("Erro ao gerar código de confirmação.");
         }
 
-        String url = environmentOutputPort.getEmailConfirmationUrl() + "?code=" + code;
+        String url = environmentOutputPort.getApiBaseUrl() + "/users/confirm?code=" + code;
 
         String emailMessage = String.format("Olá %s, clique no link abaixo para confirmar seu e-mail: %s",
                 user.getFirstName(), url);
@@ -181,7 +181,7 @@ public class UserService implements UserInputPort {
 
         cacheOutputPort.set("code:" + code.toString(), user.getId().toString(), 5);
 
-        String url = environmentOutputPort.getValidateResetPasswordUrl() + "?code=" + code.toString();
+        String url = environmentOutputPort.getApiBaseUrl() + "/users/validate-reset-password?code=" + code.toString();
 
         String emailMessage = String.format("Olá %s, clique no link abaixo para redefinir sua senha: %s",
                 user.getFirstName(), url);

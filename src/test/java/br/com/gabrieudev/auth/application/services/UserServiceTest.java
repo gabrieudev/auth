@@ -90,7 +90,7 @@ class UserServiceTest {
 
         when(userOutputPort.findById(userId)).thenReturn(Optional.of(testUser));
 
-        when(environmentOutputPort.getEmailConfirmationUrl()).thenReturn("http://localhost:8080/users/confirm");
+        when(environmentOutputPort.getApiBaseUrl()).thenReturn("http://localhost:8080/api/v1");
         when(cacheOutputPort.set(anyString(), anyString(), anyInt())).thenReturn(true);
 
         User result = userService.create(testUser);
@@ -99,7 +99,7 @@ class UserServiceTest {
         assertEquals(email, result.getEmail());
         verify(userOutputPort).hashPassword(anyString());
         verify(emailOutputPort).sendEmail(eq(email), anyString(), stringArgumentCaptor.capture());
-        assertTrue(stringArgumentCaptor.getValue().contains("http://localhost:8080/users/confirm"));
+        assertTrue(stringArgumentCaptor.getValue().contains("http://localhost:8080/api/v1"));
     }
 
     @Test
@@ -265,7 +265,7 @@ class UserServiceTest {
     void sendConfirmationEmail_Success_SendsEmailWithUrl() {
         when(userOutputPort.findById(userId)).thenReturn(Optional.of(testUser));
         when(cacheOutputPort.set(anyString(), anyString(), anyInt())).thenReturn(true);
-        when(environmentOutputPort.getEmailConfirmationUrl()).thenReturn("http://localhost:8080/users/confirm");
+        when(environmentOutputPort.getApiBaseUrl()).thenReturn("http://localhost:8080/api/v1");
         when(emailOutputPort.sendEmail(anyString(), anyString(), anyString())).thenReturn(true);
 
         userService.sendConfirmationEmail(userId);
@@ -276,7 +276,7 @@ class UserServiceTest {
                 stringArgumentCaptor.capture());
 
         String emailMessage = stringArgumentCaptor.getValue();
-        assertTrue(emailMessage.contains("http://localhost:8080/users/confirm"), "URL de confirmação não encontrada no email");
+        assertTrue(emailMessage.contains("http://localhost:8080/api/v1"), "URL de confirmação não encontrada no email");
         assertTrue(emailMessage.contains(testUser.getFirstName()), "Nome do usuário não encontrado no email");
     }
 }
