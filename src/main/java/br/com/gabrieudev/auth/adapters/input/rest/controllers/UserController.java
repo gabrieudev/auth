@@ -45,9 +45,7 @@ public class UserController {
     private final UserInputPort userInputPort;
     @Value("${frontend.base-url}")
     private String frontendUrl;
-    @Value("${frontend.reset-password.url}")
-    private String frontendResetPasswordUrl;
-
+    
     public UserController(UserInputPort userInputPort) {
         this.userInputPort = userInputPort;
     }
@@ -541,7 +539,7 @@ public class UserController {
     ) {
         userInputPort.validateResetPassword(code);
 
-        response.setHeader("Location", frontendResetPasswordUrl + "?code=" + code);
+        response.setHeader("Location", frontendUrl + "/reset-password?code=" + code);
         response.setStatus(HttpStatus.FOUND.value());
     }
 

@@ -13,9 +13,7 @@ public class EnvironmentRepositoryAdapter implements EnvironmentOutputPort {
     private Integer accessTokenExpiration;
     @Value("${jwt.refresh-token.minutes}")
     private Integer refreshTokenExpiration;
-    @Value("${frontend.reset-password.url}")
-    private String frontendResetPasswordUrl;
-
+    
     @Override
     public String getApiBaseUrl() {
         return apiBaseUrl;
@@ -29,10 +27,5 @@ public class EnvironmentRepositoryAdapter implements EnvironmentOutputPort {
     @Override
     public Integer getRefreshTokenExpiration() {
         return refreshTokenExpiration;
-    }
-
-    @Override
-    public String getFrontendResetPasswordUrl() {
-        return frontendResetPasswordUrl;
     }
 }

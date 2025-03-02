@@ -163,13 +163,9 @@ public class UserService implements UserInputPort {
         String userId = cacheOutputPort.get("code:" + code.toString())
                 .orElseThrow(() -> new NotFoundException("Código de redefinição de senha inválido."));
 
-        User user = userOutputPort.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
-
-        emailOutputPort.sendEmail(
-                user.getEmail(),
-                "Redefinição de senha",
-                "Sua senha foi redefinida com sucesso.");
+        if (!userOutputPort.existsById(UUID.fromString(userId))) {
+            throw new NotFoundException("Usuário não encontrado.");
+        }
     }
 
     @Override
