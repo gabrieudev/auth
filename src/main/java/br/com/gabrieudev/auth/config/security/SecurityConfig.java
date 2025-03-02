@@ -56,6 +56,9 @@ public class SecurityConfig {
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/info").permitAll()
+                        .requestMatchers("/actuator/**").hasAuthority("SCOPE_ADMIN")
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/users",
