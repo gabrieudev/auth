@@ -86,7 +86,7 @@ To run the application, create a `.env` file in the project root directory with 
 | `FRONTEND_BASE_URL`           | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | ✅      | URL of some interface for redirection (Swagger as default).      |
 | `FRONTEND_RESET_PASSWORD_URL` | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | ✅      | URL of page for password reset in frontend (Swagger as default). |
 | `ACCESS_TOKEN_EXPIRATION`     | 5                                                           | ✅      | access token expiration time in minutes.                         |
-| `ACCESS_TOKEN_EXPIRATION`     | 10080                                                       | ❌      | refresh token expiration time in minutes.                        |
+| `ACCESS_TOKEN_EXPIRATION`     | 10080                                                       | ✅      | refresh token expiration time in minutes.                        |
 
 > If you don't know how to obtain app password, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=pt-BR) can assist you.
 
