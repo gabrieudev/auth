@@ -101,7 +101,7 @@ docker compose up -d --build
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-You can now interact with the API routes via the [Swagger interface](http://localhost:8080/api/v1/swagger-ui/index.html).
+You can now interact with the API routes via [http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html](http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html).
 
 Note: Upon initialization, an admin user is created in the database with the following credentials:
 
