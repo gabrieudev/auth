@@ -94,7 +94,7 @@ docker compose up -d --build
 
 <h2 id="rotas">📍 Endpoints da API</h2>
 
-Agora você poderá interagir com as rotas acessando a [interface Swagger](http://localhost:8080/swagger-ui/index.html).
+Agora você poderá interagir com as rotas acessando a [interface Swagger](http://localhost:8080/api/v1/swagger-ui/index.html).
 
 Observação: Assim que a aplicação é inicializada, é criado um usuário administrador no banco de dados com as seguintes informações:
 
