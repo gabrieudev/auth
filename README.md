@@ -68,25 +68,27 @@ git clone https://github.com/gabrieudev/auth.git
 
 To run the application, create a `.env` file in the project root directory with the following variables:
 
-| Key                        | Default Value                 | Required | Description                                              |
-| -------------------------- | ----------------------------- | -------- | -------------------------------------------------------- |
-| `PROFILE`                  | dev                           | no       | Profile to run the application (dev or prod).            |
-| `DATASOURCE_URL`           | initialized in docker-compose | no       | Database connection URL.                                 |
-| `DATASOURCE_USERNAME`      | initialized in docker-compose | no       | Database username.                                       |
-| `DATASOURCE_PASSWORD`      | initialized in docker-compose | no       | Database password.                                       |
-| `REDIS_HOST`               | initialized in docker-compose | no       | Redis connection host.                                   |
-| `REDIS_PORT`               | initialized in docker-compose | no       | Redis connection port.                                   |
-| `REDIS_PASSWORD`           | initialized in docker-compose | no       | Redis password.                                          |
-| `EMAIL_HOST`               | Gmail host                    | no       | Email service host.                                      |
-| `EMAIL_PORT`               | Gmail port                    | no       | Email service port.                                      |
-| `EMAIL_USERNAME`           | none                          | yes      | Email for sending notifications through the application. |
-| `EMAIL_PASSWORD`           | none                          | yes      | App password.                                            |
-| `API_BASE_URL`             | Local URL                     | no       | API base URL.                                            |
-| `FRONTEND_BASE_URL`        | Swagger UI URL                | no       | Frontend URL for redirection.                            |
-| `ACCESS_TOKEN_EXPIRATION`  | 5                             | no       | Access token validity in minutes.                        |
-| `REFRESH_TOKEN_EXPIRATION` | 10080                         | no       | Refresh token validity in minutes.                       |
+| Key                           | Default Value                                               | Required | Description                                                      |
+| ----------------------------- | ----------------------------------------------------------- | -------- | ---------------------------------------------------------------- |
+| `SERVER_PORT`                 | 8080                                                        | no       | server port.                                                     |
+| `PROFILE`                     | dev                                                         | no       | profile in which the application will run (dev or prod).         |
+| `DATASOURCE_URL`              | jdbc:postgresql://postgres:5432/auth                        | no       | database connection URL.                                         |
+| `DATASOURCE_USERNAME`         | admin                                                       | no       | database connection username.                                    |
+| `DATASOURCE_PASSWORD`         | admin                                                       | no       | database connection password.                                    |
+| `REDIS_HOST`                  | redis                                                       | no       | Redis connection host.                                           |
+| `REDIS_PORT`                  | 6379                                                        | no       | Redis connection port.                                           |
+| `REDIS_PASSWORD`              | admin                                                       | no       | Redis connection password.                                       |
+| `EMAIL_HOST`                  | smtp.gmail.com                                              | no       | email host for sending notifications.                            |
+| `EMAIL_PORT`                  | 587                                                         | no       | email port for sending notifications.                            |
+| `EMAIL_USERNAME`              | none                                                        | yes      | email for sending notifications through the application.         |
+| `EMAIL_PASSWORD`              | none                                                        | yes      | app password.                                                    |
+| `API_BASE_URL`                | http://localhost:{SERVER_PORT}/api/v1                       | no       | base URL of the API.                                             |
+| `FRONTEND_BASE_URL`           | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | no       | URL of some interface for redirection (Swagger as default).      |
+| `FRONTEND_RESET_PASSWORD_URL` | http://localhost:{SERVER_PORT}/api/v1/swagger-ui/index.html | no       | URL of page for password reset in frontend (Swagger as default). |
+| `ACCESS_TOKEN_EXPIRATION`     | 5                                                           | no       | access token expiration time in minutes.                         |
+| `ACCESS_TOKEN_EXPIRATION`     | 10080                                                       | no       | refresh token expiration time in minutes.                        |
 
-> If you don't know how to obtain app passwords, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=pt-BR) can assist you.
+> If you don't know how to obtain app password, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=pt-BR) can assist you.
 
 <h3>Initializing</h3>
 
@@ -117,9 +119,3 @@ Contributions are highly welcome! To contribute, fork the repository and create 
 2. `git checkout -b feature/NAME`
 3. Follow commit standards.
 4. Open a Pull Request explaining the resolved issue or developed feature. Include screenshots of visual changes if applicable, and await review!
-
-<h3>Helpful Documentation</h3>
-
-[📝 How to Create a Pull Request](https://www.atlassian.com/br/git/tutorials/making-a-pull-request)
-
-[💾 Commit Message Standards](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716)
