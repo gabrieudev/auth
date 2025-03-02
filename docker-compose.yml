@@ -9,6 +9,8 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - TZ=America/Sao_Paulo
+      - SERVER_PORT=${SERVER_PORT:-8080}
       - PROFILE=${PROFILE:-dev}
       - DATASOURCE_URL=${DATASOURCE_URL:-jdbc:postgresql://postgres:5432/auth}
       - DATASOURCE_USERNAME=${DATASOURCE_USERNAME:-admin}
@@ -22,9 +24,15 @@ services:
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
       - API_BASE_URL=${API_BASE_URL:-http://localhost:8080/api/v1}
       - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:8080/api/v1/swagger-ui/index.html}
-      - EMAIL_CONFIRMATION_URL=${EMAIL_CONFIRMATION_URL:-http://localhost:8080/api/v1/users/confirm}
+      - FRONTEND_RESET_PASSWORD_URL=${FRONTEND_RESET_PASSWORD_URL:-http://localhost:8080/api/v1/swagger-ui/index.html}
       - ACCESS_TOKEN_EXPIRATION=${ACCESS_TOKEN_EXPIRATION:-5}
       - REFRESH_TOKEN_EXPIRATION=${REFRESH_TOKEN_EXPIRATION:-10080}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${API_BASE_URL}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
     depends_on:
       postgres:
         condition: service_healthy
