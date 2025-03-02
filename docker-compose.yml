@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
     environment:
       - TZ=America/Sao_Paulo
       - SERVER_PORT=${SERVER_PORT:-8080}
@@ -22,9 +22,9 @@ services:
       - EMAIL_PORT=${EMAIL_PORT:-587}
       - EMAIL_USERNAME=${EMAIL_USERNAME}
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      - API_BASE_URL=${API_BASE_URL:-http://localhost:8080/api/v1}
-      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:8080/api/v1/swagger-ui/index.html}
-      - FRONTEND_RESET_PASSWORD_URL=${FRONTEND_RESET_PASSWORD_URL:-http://localhost:8080/api/v1/swagger-ui/index.html}
+      - API_BASE_URL=${API_BASE_URL:-http://localhost:${SERVER_PORT:-8080}/api/v1}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:${SERVER_PORT:-8080}/api/v1/swagger-ui/index.html}
+      - FRONTEND_RESET_PASSWORD_URL=${FRONTEND_RESET_PASSWORD_URL:-http://localhost:${SERVER_PORT:-8080}/api/v1/swagger-ui/index.html}
       - ACCESS_TOKEN_EXPIRATION=${ACCESS_TOKEN_EXPIRATION:-5}
       - REFRESH_TOKEN_EXPIRATION=${REFRESH_TOKEN_EXPIRATION:-10080}
     healthcheck:
@@ -33,7 +33,7 @@ services:
           "CMD",
           "curl",
           "-f",
-          "${API_BASE_URL:-http://localhost:8080/api/v1}/actuator/health",
+          "${API_BASE_URL:-http://localhost:${SERVER_PORT:-8080}/api/v1}/actuator/health",
         ]
       interval: 30s
       timeout: 10s

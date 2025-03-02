@@ -27,6 +27,6 @@ USER spring
 
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseContainerSupport -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
 
-EXPOSE 8080
+EXPOSE ${SERVER_PORT}
 
 ENTRYPOINT exec java ${JAVA_OPTS} -jar /app/app.jar
