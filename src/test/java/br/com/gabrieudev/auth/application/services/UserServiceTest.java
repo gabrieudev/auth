@@ -122,6 +122,16 @@ class UserServiceTest {
     }
 
     @Test
+    void delete_WhenUserDeleteFails_ThrowsInternalErrorException() {
+        when(userOutputPort.existsById(userId)).thenReturn(true);
+        when(userRoleOutputPort.findByUserId(userId)).thenReturn(List.of(new UserRole()));
+        when(userOutputPort.delete(userId)).thenReturn(false);
+
+        assertThrows(InternalErrorException.class,
+                () -> userService.delete(userId));
+    }
+
+    @Test
     void confirmEmail_InvalidCode_ThrowsNotFoundException() {
         when(cacheOutputPort.get(anyString())).thenReturn(Optional.empty());
 
@@ -161,11 +171,30 @@ class UserServiceTest {
     }
 
     @Test
+    void sendConfirmationEmail_WhenEmailSendsFails_ThrowsEmailException() {
+        when(userOutputPort.findById(userId)).thenReturn(Optional.of(testUser));
+        when(cacheOutputPort.set(anyString(), anyString(), anyInt())).thenReturn(true);
+        when(emailOutputPort.sendEmail(anyString(), anyString(), anyString())).thenReturn(false);
+
+        assertThrows(EmailException.class,
+                () -> userService.sendConfirmationEmail(userId));
+    }
+
+    @Test
     void getMe_InvalidToken_ThrowsInvalidTokenException() {
         when(authOutputPort.isValidToken(anyString())).thenReturn(false);
 
         assertThrows(InvalidTokenException.class,
                 () -> userService.getMe("invalid-token"));
+    }
+
+    @Test
+    void getMe_WhenUserNotFound_ThrowsNotFoundException() {
+        when(authOutputPort.isValidToken(anyString())).thenReturn(true);
+        when(authOutputPort.getUserByToken(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> userService.getMe("valid-token"));
     }
 
     @Test
@@ -232,6 +261,15 @@ class UserServiceTest {
     @Test
     void validateResetPassword_InvalidCode_ThrowsNotFoundException() {
         when(cacheOutputPort.get(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> userService.validateResetPassword(UUID.randomUUID()));
+    }
+
+    @Test
+    void validateResetPassword_WhenUserNotFound_ThrowsNotFoundException() {
+        when(cacheOutputPort.get(anyString())).thenReturn(Optional.of(userId.toString()));
+        when(userOutputPort.existsById(userId)).thenReturn(false);
 
         assertThrows(NotFoundException.class,
                 () -> userService.validateResetPassword(UUID.randomUUID()));
