@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <b>This project was created to simplify the user authentication and authorization process, serving as a base to be reused in any Java REST API requiring such functionalities. Additionally, the API was developed following <a href="https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507">Hexagonal Architecture</a> principles and the latest industry best practices, including 100% unit test coverage to ensure the integrity of sensitive data.</b>
+  <b>This project was created to simplify the user authentication and authorization process, serving as a base to be reused in any Java REST API requiring such functionalities. Additionally, the API was developed following <a href="https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507">Hexagonal Architecture</a> principles and the latest industry best practices, including 100% unit test coverage and HTTP-Only Cookies to ensure the integrity of sensitive data.</b>
 </p>
 
 <h2 id="structure">📂 Project Structure</h2>

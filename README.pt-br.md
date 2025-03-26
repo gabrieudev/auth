@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <b>O projeto foi criado para faciltar o processo de autenticação e autorização de usuários, servindo como base para ser reutilizado em qualquer API REST em Java que necessite de tais funcionalidades. Além disso, a API foi desenvolvida seguindo os princípios da <a href=https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507>Arquitetura Hexagonal</a> e utilizando as melhores e mais atualizadas práticas do mercado, incluindo testes unitários com 100% de cobertura, para assegurar a integridade dos dados sensíveis.</b>
+  <b>O projeto foi criado para facilitar o processo de autenticação e autorização de usuários, servindo como base para ser reutilizado em qualquer API REST em Java que necessite de tais funcionalidades. Além disso, a API foi desenvolvida seguindo os princípios da <a href=https://medium.com/@marcio.kgr/arquitetura-hexagonal-8958fb3e5507>Arquitetura Hexagonal</a> e utilizando as melhores e mais atualizadas práticas do mercado, incluindo testes unitários com 100% de cobertura e Cookies HTTP-Only para assegurar a integridade dos dados sensíveis.</b>
 </p>
 
 <h2 id="estrutura">📂 Estrutura do projeto</h2>
