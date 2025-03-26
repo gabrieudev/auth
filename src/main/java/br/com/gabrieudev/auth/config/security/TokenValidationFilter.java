@@ -29,20 +29,18 @@ public class TokenValidationFilter extends OncePerRequestFilter {
     private final JwtDecoder jwtDecoder;
 
     public TokenValidationFilter(
-        AuthInputPort authInputPort,
-        JwtDecoder jwtDecoder
-    ) {
+            AuthInputPort authInputPort,
+            JwtDecoder jwtDecoder) {
         this.authInputPort = authInputPort;
         this.jwtDecoder = jwtDecoder;
     }
 
     @Override
     protected void doFilterInternal(
-        @NonNull HttpServletRequest request, 
-        @NonNull HttpServletResponse response, 
-        @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
-        
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+
         Cookie[] cookies = request.getCookies();
         String token = null;
 
@@ -66,9 +64,8 @@ public class TokenValidationFilter extends OncePerRequestFilter {
                 List<GrantedAuthority> authorities = extractAuthorities(jwt);
 
                 JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-                    jwt, 
-                    authorities
-                );
+                        jwt,
+                        authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
@@ -83,9 +80,9 @@ public class TokenValidationFilter extends OncePerRequestFilter {
     private List<GrantedAuthority> extractAuthorities(Jwt jwt) {
         String scope = jwt.getClaimAsString("scope");
         return Arrays.stream(scope.split(" "))
-            .map(role -> "SCOPE_" + role)
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
+                .map(role -> "SCOPE_" + role)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     private void sendError(HttpServletResponse response, String message) throws IOException {

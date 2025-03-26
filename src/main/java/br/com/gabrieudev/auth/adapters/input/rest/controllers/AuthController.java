@@ -87,7 +87,6 @@ public class AuthController {
     ) {
         log.info("POST /api/v1/auth/login | Client: {}", request.getRemoteAddr());
 
-
         Tokens tokens = authInputPort.login(loginRequest.getEmail(), loginRequest.getPassword());
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());

@@ -41,18 +41,16 @@ public class AuthService implements AuthInputPort {
 
     @Override
     public Tokens refreshTokens(String refreshToken) {
-        if (!authOutputPort.isValidToken(refreshToken)) {
+        if (!isValidToken(refreshToken)) {
             throw new InvalidTokenException("Token inválido.");
         }
 
         User user = getUserByToken(refreshToken);
 
-        String accessToken = generateAccessToken(user);
+        String newAccessToken = generateAccessToken(user);
         String newRefreshToken = generateRefreshToken(user);
 
-        logout(newRefreshToken);
-
-        return new Tokens(accessToken, newRefreshToken);
+        return new Tokens(newAccessToken, newRefreshToken);
     }
 
     @Override
