@@ -67,8 +67,8 @@ public class RoleController {
                 )
             ),
             @ApiResponse(
-                responseCode = "406",
-                description = "Requisição inválida.",
+                responseCode = "422",
+                description = "Dados inválidos.",
                 content = @Content(
                     schema = @Schema(implementation = ApiResponseDTO.class)
                 )
@@ -137,6 +137,13 @@ public class RoleController {
             @ApiResponse(
                 responseCode = "409",
                 description = "Papel ja cadastrado.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "422",
+                description = "Dados inválidos.",
                 content = @Content(
                     schema = @Schema(implementation = ApiResponseDTO.class)
                 )

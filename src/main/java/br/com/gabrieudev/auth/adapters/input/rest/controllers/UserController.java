@@ -66,8 +66,8 @@ public class UserController {
                 description = "Usuário cadastrado com sucesso."
             ),
             @ApiResponse(
-                responseCode = "406",
-                description = "Requisição inválida.",
+                responseCode = "422",
+                description = "Dados inválidos.",
                 content = @Content(
                     schema = @Schema(implementation = ApiResponseDTO.class)
                 )
@@ -133,8 +133,8 @@ public class UserController {
                 )
             ),
             @ApiResponse(
-                responseCode = "406",
-                description = "Requisição inválida.",
+                responseCode = "422",
+                description = "Dados inválidos.",
                 content = @Content(
                     schema = @Schema(implementation = ApiResponseDTO.class)
                 )
@@ -605,6 +605,13 @@ public class UserController {
             @ApiResponse(
                 responseCode = "404",
                 description = "Código de confirmação invático.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "422",
+                description = "Dados inválidos.",
                 content = @Content(
                     schema = @Schema(implementation = ApiResponseDTO.class)
                 )

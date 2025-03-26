@@ -23,22 +23,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleUserNotFoundException(NotFoundException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.NOT_FOUND);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 404);
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleBadCredentialsException(BadCredentialsException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.BAD_REQUEST);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 400);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleUserAlreadyExistsException(AlreadyExistsException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.CONFLICT);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 409);
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleInvalidTokenException(InvalidTokenException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.UNAUTHORIZED);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 401);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -49,22 +53,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(Objects.requireNonNull(e.getFieldError()).getDefaultMessage(), 400);
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(Objects.requireNonNull(e.getFieldError()).getDefaultMessage(), 422);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleBusinessRuleException(BusinessRuleException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.CONFLICT);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 409);
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EmailException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleEmailException(EmailException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 500);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(InternalErrorException.class)
     public ResponseEntity<ApiResponseDTO<String>> handleInternalErrorException(InternalErrorException e) {
-        return new ResponseEntity<>(e.toApiResponse(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponseDTO<String> apiResponse = ApiResponseDTO.error(e.getMessage(), 500);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

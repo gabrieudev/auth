@@ -60,6 +60,13 @@ public class AuthController {
                 )
             ),
             @ApiResponse(
+                responseCode = "422",
+                description = "Usuário ou senha inválidos.",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponseDTO.class)
+                )
+            ),
+            @ApiResponse(
                 responseCode = "500",
                 description = "Erro interno do servidor.",
                 content = @Content(
