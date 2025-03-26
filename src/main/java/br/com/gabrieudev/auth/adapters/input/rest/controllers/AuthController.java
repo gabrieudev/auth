@@ -1,6 +1,6 @@
 package br.com.gabrieudev.auth.adapters.input.rest.controllers;
 
-import java.time.Instant;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.ApiResponseDTO;
 import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.LoginRequest;
-import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.LoginResponse;
-import br.com.gabrieudev.auth.adapters.input.rest.dtos.auth.RefreshTokenRequest;
 import br.com.gabrieudev.auth.application.ports.input.AuthInputPort;
 import br.com.gabrieudev.auth.domain.Tokens;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,8 +20,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @CrossOrigin
 @RequestMapping("/auth")
@@ -66,16 +69,36 @@ public class AuthController {
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDTO<LoginResponse>> login(
+    public ResponseEntity<ApiResponseDTO<String>> login(
         @Valid
         @RequestBody
-        LoginRequest loginRequest
+        LoginRequest loginRequest,
+
+        HttpServletResponse response,
+
+        HttpServletRequest request
     ) {
+        log.info("POST /api/v1/auth/login | Client: {}", request.getRemoteAddr());
+
+
         Tokens tokens = authInputPort.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        LoginResponse loginResponse = new LoginResponse(tokens.getAccessToken(), tokens.getRefreshToken(), Instant.now().plusSeconds(refreshTokenExpiration * 60), Instant.now().plusSeconds(accessTokenExpiration * 60));
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
+        refreshTokenCookie.setMaxAge((int) (refreshTokenExpiration * 60));
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(loginResponse));
+        Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
+        accessTokenCookie.setMaxAge((int) (accessTokenExpiration * 60));
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+
+        response.addCookie(refreshTokenCookie);
+        response.addCookie(accessTokenCookie);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Login realizado com sucesso."));
     }
 
     @Operation(
@@ -107,11 +130,34 @@ public class AuthController {
     )
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDTO<String>> logout(
-        @Valid
-        @RequestBody
-        RefreshTokenRequest refreshTokenRequest
+        HttpServletRequest request,
+
+        HttpServletResponse response
     ) {
-        authInputPort.logout(refreshTokenRequest.getRefreshToken());
+        log.info("POST /api/v1/auth/logout | Client: {}", request.getRemoteAddr());
+
+        String refreshToken = Arrays.stream(request.getCookies())
+            .filter(cookie -> "refreshToken".equals(cookie.getName()))
+            .findFirst()
+            .map(Cookie::getValue)
+            .orElse(null);
+
+        authInputPort.logout(refreshToken);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", "");
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+
+        Cookie accessTokenCookie = new Cookie("accessToken", "");
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+
+        response.addCookie(refreshTokenCookie);
+        response.addCookie(accessTokenCookie);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Logout realizado com sucesso."));
     }
@@ -144,15 +190,36 @@ public class AuthController {
         }
     )
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponseDTO<LoginResponse>> refresh(
-        @Valid
-        @RequestBody
-        RefreshTokenRequest refreshTokenRequest
+    public ResponseEntity<ApiResponseDTO<String>> refresh(
+        HttpServletRequest request,
+
+        HttpServletResponse response
     ) {
-        Tokens tokens = authInputPort.refreshTokens(refreshTokenRequest.getRefreshToken());
+        log.info("POST /api/v1/auth/refresh | Client: {}", request.getRemoteAddr());
 
-        LoginResponse loginResponse = new LoginResponse(tokens.getAccessToken(), tokens.getRefreshToken(), Instant.now().plusSeconds(refreshTokenExpiration * 60), Instant.now().plusSeconds(accessTokenExpiration * 60));
+        String refreshToken = Arrays.stream(request.getCookies())
+            .filter(cookie -> "refreshToken".equals(cookie.getName()))
+            .findFirst()
+            .map(Cookie::getValue)
+            .orElse(null);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(loginResponse));
+        Tokens tokens = authInputPort.refreshTokens(refreshToken);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
+        refreshTokenCookie.setMaxAge((int) (refreshTokenExpiration * 60));
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+
+        Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
+        accessTokenCookie.setMaxAge((int) (accessTokenExpiration * 60));
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+
+        response.addCookie(refreshTokenCookie);
+        response.addCookie(accessTokenCookie);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Tokens atualizados com sucesso."));
     }
 }

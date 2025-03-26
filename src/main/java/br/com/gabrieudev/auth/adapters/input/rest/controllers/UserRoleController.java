@@ -37,7 +37,7 @@ public class UserRoleController {
         summary = "Associar um usuário à uma role",
         description = "Endpoint para associar um usuário à uma role.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -95,7 +95,7 @@ public class UserRoleController {
         summary = "Desassociar um usuário de uma role",
         description = "Endpoint para desassociar um usuário de uma role.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {

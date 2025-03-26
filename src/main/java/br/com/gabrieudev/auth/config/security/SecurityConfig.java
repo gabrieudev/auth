@@ -5,23 +5,23 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -31,49 +31,42 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+    @Value("${jwt.public.key:#{null}}")
+    private String publicKeyEnv;
+    @Value("${jwt.private.key:#{null}}")
+    private String privateKeyEnv;
+    @Value("${jwt.public.key.path:#{null}}")
+    private RSAPublicKey publicKeyPath;
+    @Value("${jwt.private.key.path:#{null}}")
+    private RSAPrivateKey privateKeyPath;
+    @Value("${api.base-url}")
+    private String apiUrl;
+    @Value("${frontend.base-url}")
+    private String frontendUrl;
     private final TokenValidationFilter tokenValidationFilter;
 
     public SecurityConfig(@Lazy TokenValidationFilter tokenValidationFilter) {
         this.tokenValidationFilter = tokenValidationFilter;
     }
 
-    @Value("${jwt.public.key:#{null}}")
-    private String publicKeyEnv;
-
-    @Value("${jwt.private.key:#{null}}")
-    private String privateKeyEnv;
-
-    @Value("${jwt.public.key.path:#{null}}")
-    private RSAPublicKey publicKeyPath;
-
-    @Value("${jwt.private.key.path:#{null}}")
-    private RSAPrivateKey privateKeyPath;
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .addFilterAfter(tokenValidationFilter,
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/info").permitAll()
-                        .requestMatchers("/actuator/**").hasAuthority("SCOPE_ADMIN")
                         .requestMatchers(
-                                HttpMethod.POST,
+                                "/actuator/health",
+                                "/actuator/info",
                                 "/users",
                                 "/auth/login",
                                 "/auth/logout",
                                 "/auth/refresh",
                                 "/users/{id}/email",
-                                "/users/reset-password")
-                        .permitAll()
-                        .requestMatchers(
-                                HttpMethod.GET,
+                                "/users/reset-password",
                                 "/users/confirm/**",
-                                "/users/validate-reset-password/**")
-                        .permitAll()
-                        .requestMatchers(
+                                "/users/validate-reset-password/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -84,9 +77,9 @@ public class SecurityConfig {
                                 "/confirm.html",
                                 "/home.html")
                         .permitAll()
+                        .requestMatchers("/actuator/**").hasAuthority("SCOPE_ADMIN")
                         .anyRequest().authenticated())
-                .csrf(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 
@@ -131,4 +124,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(Arrays.asList(apiUrl, frontendUrl));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+        return request -> config;
+    }
 }

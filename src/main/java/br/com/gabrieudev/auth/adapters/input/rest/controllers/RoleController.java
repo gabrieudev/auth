@@ -29,8 +29,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @CrossOrigin
 @RequestMapping("/roles")
@@ -45,7 +48,7 @@ public class RoleController {
         summary = "Criar um papel",
         description = "Endpoint para criação de um papel.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -91,8 +94,12 @@ public class RoleController {
     public ResponseEntity<ApiResponseDTO<RoleDTO>> create(
         @Valid
         @RequestBody
-        CreateRoleDTO createRoleDTO
+        CreateRoleDTO createRoleDTO,
+
+        HttpServletRequest request
     ) {
+        log.info("POST /api/v1/roles | Client: {}", request.getRemoteAddr());
+
         Role role = roleInputPort.create(createRoleDTO.toDomainObj());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.created(RoleDTO.from(role)));
@@ -102,7 +109,7 @@ public class RoleController {
         summary = "Atualizar um papel",
         description = "Endpoint para atualização de um papel.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -148,8 +155,12 @@ public class RoleController {
     public ResponseEntity<ApiResponseDTO<RoleDTO>> update(
         @Valid
         @RequestBody
-        UpdateRoleDTO updateRoleDTO    
+        UpdateRoleDTO updateRoleDTO,
+
+        HttpServletRequest request
     ) {
+        log.info("PUT /api/v1/roles | Client: {}", request.getRemoteAddr());
+
         Role role = roleInputPort.update(updateRoleDTO.toDomainObj());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(RoleDTO.from(role)));
@@ -159,7 +170,7 @@ public class RoleController {
         summary = "Listar papeis",
         description = "Endpoint para listagem de papeis.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -201,8 +212,12 @@ public class RoleController {
             description = "Nome do papel",
             example = "ADMIN"
         )
-        @RequestParam(required = false) String name
+        @RequestParam(required = false) String name,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/roles | Client: {}", request.getRemoteAddr());
+
         List<RoleDTO> roles = roleInputPort.findAll(userId, name)
             .stream()
             .map(RoleDTO::from)
@@ -215,7 +230,7 @@ public class RoleController {
         summary = "Obter um papel",
         description = "Endpoint para obter um papel.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -256,8 +271,12 @@ public class RoleController {
             description = "ID do papel",
             example = "123e4567-e89b-12d3-a456-426614174000"
         )
-        @PathVariable UUID id
+        @PathVariable UUID id,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/roles/{id} | Client: {}", request.getRemoteAddr());
+
         Role role = roleInputPort.findById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(RoleDTO.from(role)));
@@ -267,7 +286,7 @@ public class RoleController {
         summary = "Excluir um papel",
         description = "Endpoint para exclusão de um papel.",
         tags = { "Role" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -315,8 +334,12 @@ public class RoleController {
             description = "ID do papel",
             example = "123e4567-e89b-12d3-a456-426614174000"
         )
-        @PathVariable UUID id
+        @PathVariable UUID id,
+
+        HttpServletRequest request
     ) {
+        log.info("DELETE /api/v1/roles/{id} | Client: {}", request.getRemoteAddr());
+
         roleInputPort.delete(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Papel excluido com sucesso."));

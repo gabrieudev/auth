@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -21,6 +22,8 @@ public class SwaggerConfig {
         @Bean
         OpenAPI authOpenAPI() {
                 return new OpenAPI()
+                                .components(new Components()
+                                                .addSecuritySchemes("Auth", new SecurityScheme()))
                                 .info(new Info().title("Auth API")
                                                 .description("API de autenticação e autorização de usuários")
                                                 .version("v0.0.1")
@@ -28,11 +31,6 @@ public class SwaggerConfig {
                                 .servers(List.of(
                                                 new Server().url(apiUrl)
                                                                 .description("Servidor da API")))
-                                .components(new io.swagger.v3.oas.models.Components()
-                                                .addSecuritySchemes("BearerAuth", new SecurityScheme()
-                                                                .type(SecurityScheme.Type.HTTP)
-                                                                .scheme("bearer")
-                                                                .bearerFormat("JWT")))
                                 .externalDocs(new ExternalDocumentation()
                                                 .description("Repositório do projeto")
                                                 .url("https://github.com/gabrieudev/auth"));

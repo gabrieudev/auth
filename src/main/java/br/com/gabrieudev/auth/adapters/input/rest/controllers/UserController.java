@@ -1,5 +1,6 @@
 package br.com.gabrieudev.auth.adapters.input.rest.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,10 +35,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @CrossOrigin
 @RequestMapping("/users")
@@ -88,8 +92,12 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO<UserDTO>> create(
         @Valid
         @RequestBody 
-        CreateUserDTO user
+        CreateUserDTO user,
+
+        HttpServletRequest request
     ) {
+        log.info("POST /api/v1/users | Client: {}", request.getRemoteAddr());
+
         User createdUser = userInputPort.create(user.toDomainObj());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.created(UserDTO.from(createdUser)));
@@ -99,7 +107,7 @@ public class UserController {
         summary = "Atualizar usuário",
         description = "Endpoint para atualização de um usuário.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -145,8 +153,12 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO<UserDTO>> update(
         @Valid
         @RequestBody 
-        UpdateUserDTO user
+        UpdateUserDTO user,
+
+        HttpServletRequest request
     ) {
+        log.info("PUT /api/v1/users | Client: {}", request.getRemoteAddr());
+
         User updatedUser = userInputPort.update(user.toDomainObj());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(updatedUser)));
@@ -156,7 +168,7 @@ public class UserController {
         summary = "Listar usuários",
         description = "Endpoint para listagem de usuários.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -212,8 +224,12 @@ public class UserController {
             description = "Quantidade de registros por página",
             example = "10"
         )
-        @RequestParam(required = true) Integer size
+        @RequestParam(required = true) Integer size,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/users | Client: {}", request.getRemoteAddr());
+
         List<UserDTO> users = userInputPort.findAll(param, email, page, size)
             .stream()
             .map(UserDTO::from)
@@ -228,7 +244,7 @@ public class UserController {
         summary = "Obter usuário logado",
         description = "Endpoint para obter o usuário logado.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -257,9 +273,15 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO<UserDTO>> getMe(
         HttpServletRequest request
     ) {
-        String token = request.getHeader("Authorization").split(" ")[1];
+        log.info("GET /api/v1/users/me | Client: {}", request.getRemoteAddr());
 
-        User user = userInputPort.getMe(token);
+        String accessToken = Arrays.stream(request.getCookies())
+            .filter(cookie -> "accessToken".equals(cookie.getName()))
+            .findFirst()
+            .map(Cookie::getValue)
+            .orElse(null);
+
+        User user = userInputPort.getMe(accessToken);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(user)));
     }
@@ -268,7 +290,7 @@ public class UserController {
         summary = "Obter usuário",
         description = "Endpoint para obter um usuário.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -309,8 +331,12 @@ public class UserController {
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
         )
-        @PathVariable UUID id
+        @PathVariable UUID id,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/users/{id} | Client: {}", request.getRemoteAddr());
+
         User user = userInputPort.findById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok(UserDTO.from(user)));
@@ -364,8 +390,12 @@ public class UserController {
         )
         @RequestParam(required = true) UUID code,
 
-        HttpServletResponse response
+        HttpServletResponse response,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/users/confirm | Client: {}", request.getRemoteAddr());
+
         userInputPort.confirmEmail(code);
         
         response.setHeader("Location", frontendUrl);
@@ -405,8 +435,12 @@ public class UserController {
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
         )
-        @PathVariable UUID id
+        @PathVariable UUID id,
+
+        HttpServletRequest request
     ) {
+        log.info("POST /api/v1/users/{id}/email | Client: {}", request.getRemoteAddr());
+
         userInputPort.sendConfirmationEmail(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("E-mail enviado com sucesso."));
@@ -416,7 +450,7 @@ public class UserController {
         summary = "Deletar usuário",
         description = "Endpoint para deletar um usuário.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -450,8 +484,12 @@ public class UserController {
             description = "ID do usuário",
             example = "123e4567-e89b-12d3-a456-426614174000"
         )
-        @PathVariable UUID id
+        @PathVariable UUID id,
+
+        HttpServletRequest request
     ) {
+        log.info("DELETE /api/v1/users/{id} | Client: {}", request.getRemoteAddr());
+
         userInputPort.delete(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.noContent("Usuário deletado com sucesso."));
@@ -461,7 +499,7 @@ public class UserController {
         summary = "Enviar e-mail de redefinição de senha",
         description = "Endpoint para enviar e-mail de redefinição de senha.",
         tags = { "User" },
-        security = @SecurityRequirement(name = "BearerAuth")
+        security = @SecurityRequirement(name = "Auth")
     )
     @ApiResponses(
         value = {
@@ -492,9 +530,15 @@ public class UserController {
 
         HttpServletResponse response
     ) {
-        String token = request.getHeader("Authorization").split(" ")[1];
+        log.info("POST /api/v1/users/forgot-password | Client: {}", request.getRemoteAddr());
 
-        userInputPort.sendResetPasswordEmail(token);
+        String accessToken = Arrays.stream(request.getCookies())
+            .filter(cookie -> "accessToken".equals(cookie.getName()))
+            .findFirst()
+            .map(Cookie::getValue)
+            .orElse(null);
+
+        userInputPort.sendResetPasswordEmail(accessToken);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("E-mail enviado com sucesso."));
     }
@@ -535,8 +579,12 @@ public class UserController {
         )
         @RequestParam(required = true) UUID code,
 
-        HttpServletResponse response
+        HttpServletResponse response,
+
+        HttpServletRequest request
     ) {
+        log.info("GET /api/v1/users/validate-reset-password | Client: {}", request.getRemoteAddr());
+
         userInputPort.validateResetPassword(code);
 
         response.setHeader("Location", frontendUrl + "/reset-password?code=" + code);
@@ -574,8 +622,12 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO<String>> resetPassword(
         @Valid
         @RequestBody
-        ResetPasswordDTO resetPasswordDTO
+        ResetPasswordDTO resetPasswordDTO,
+
+        HttpServletRequest request
     ) {
+        log.info("POST /api/v1/users/reset-password | Client: {}", request.getRemoteAddr());
+
         userInputPort.resetPassword(resetPasswordDTO.getCode(), resetPasswordDTO.getPassword());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.ok("Senha redefinida com sucesso."));
