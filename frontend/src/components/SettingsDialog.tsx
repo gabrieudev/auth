@@ -6,14 +6,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "./ThemeToggle";
-import { useState, useEffect } from "react";
+import { forgotPassword, updateUser } from "@/services/userService";
 import { User } from "@/types/user";
-import { getMe, forgotPassword } from "@/services/userService";
-import { Button } from "./ui/button";
-import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, PenBoxIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { ThemeToggle } from "./ThemeToggle";
+import { Button } from "./ui/button";
+import { getMe } from "@/services/userService";
 
 export function SettingsDialog({
   open,
@@ -24,6 +25,9 @@ export function SettingsDialog({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,10 +54,30 @@ export function SettingsDialog({
     }
   };
 
+  const handleUpdateUser = async () => {
+    if (!user) return;
+    try {
+      await updateUser({ ...user, firstName, lastName });
+      setUser(
+        (prev) =>
+          ({
+            ...prev,
+            firstName,
+            lastName,
+          } as User)
+      );
+      toast.success("Nome atualizado com sucesso!");
+      setEditDialogOpen(false);
+    } catch (error) {
+      const err = error as AxiosError;
+      toast.error(err.message);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild></DialogTrigger>
-      <DialogContent>
+      <DialogContent className="grid gap-4">
         <DialogHeader>
           <DialogTitle className="text-center">Configurações</DialogTitle>
         </DialogHeader>
@@ -65,38 +89,77 @@ export function SettingsDialog({
           </TabsList>
 
           <TabsContent value="account">
-            <div className="flex items-center justify-between mb-4 mt-4">
-              <h2 className="text-lg font-semibold">Nome</h2>
-              <p>
-                {user?.firstName} {user?.lastName}
-              </p>
-            </div>
+            <div className="grid gap-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Nome</h2>
+                <div className="flex items-center gap-2">
+                  <p>
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  <Button
+                    onClick={() => setEditDialogOpen(true)}
+                    variant="outline"
+                  >
+                    <PenBoxIcon />
+                  </Button>
+                </div>
+              </div>
 
-            <div className="flex items-center justify-between mb-4 mt-4">
-              <h2 className="text-lg font-semibold">E-mail</h2>
-              <p>{user?.email}</p>
-            </div>
+              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="mb-4">Editar Nome</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col gap-6">
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Nome"
+                      className="input"
+                    />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Sobrenome"
+                      className="input"
+                    />
+                    <Button onClick={handleUpdateUser} variant="default">
+                      Salvar
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
 
-            <div className="flex items-center justify-between mb-4 mt-4">
-              <h2 className="text-lg font-semibold">Redefinir senha</h2>
-              <Button
-                onClick={handleForgotPassword}
-                variant="outline"
-                disabled={loading}
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Redefinir"
-                )}
-              </Button>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">E-mail</h2>
+                <p>{user?.email}</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Redefinir senha</h2>
+                <Button
+                  onClick={handleForgotPassword}
+                  variant="outline"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Redefinir"
+                  )}
+                </Button>
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="general">
-            <div className="flex items-center justify-between mb-4 mt-4">
-              <h2 className="text-lg font-semibold">Tema</h2>
-              <ThemeToggle />
+            <div className="grid gap-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Tema</h2>
+                <ThemeToggle />
+              </div>
             </div>
           </TabsContent>
         </Tabs>

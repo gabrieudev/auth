@@ -12,22 +12,35 @@ import { HelmetProvider } from "react-helmet-async";
 import SignUp from "./pages/SignUp";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
-import { isAuthenticated } from "./services/authService";
+import { isTokenValid, refreshTokens } from "./services/authService";
 import ResetPassword from "./pages/ResetPassword";
+import { Loader2 } from "lucide-react";
 
 const PrivateRoute: React.FC = () => {
   const [auth, setAuth] = useState<boolean | null>(null);
+  const tokenExpiresAt = localStorage.getItem("tokenExpiresAt");
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authenticated = await isAuthenticated();
-      setAuth(authenticated);
+      if (!tokenExpiresAt) {
+        setAuth(false);
+      }
+      if (isTokenValid(tokenExpiresAt || "")) {
+        setAuth(true);
+      } else {
+        await refreshTokens();
+        setAuth(true);
+      }
     };
     checkAuth();
-  }, []);
+  }, [tokenExpiresAt]);
 
   if (auth === null) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   return auth ? <Outlet /> : <Navigate to="/signin" />;
@@ -35,17 +48,29 @@ const PrivateRoute: React.FC = () => {
 
 const PublicRoute: React.FC = () => {
   const [auth, setAuth] = useState<boolean | null>(null);
+  const tokenExpiresAt = localStorage.getItem("tokenExpiresAt");
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authenticated = await isAuthenticated();
-      setAuth(authenticated);
+      if (!tokenExpiresAt) {
+        setAuth(false);
+      }
+      if (isTokenValid(tokenExpiresAt || "")) {
+        setAuth(true);
+      } else {
+        await refreshTokens();
+        setAuth(true);
+      }
     };
     checkAuth();
-  }, []);
+  }, [tokenExpiresAt]);
 
   if (auth === null) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   return auth ? <Navigate to="/dashboard" /> : <Outlet />;

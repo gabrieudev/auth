@@ -1,5 +1,5 @@
-import api from "./api";
 import { ApiResponse } from "@/types/apiResponse";
+import api from "./api";
 
 export async function login(email: string, password: string): Promise<string> {
   try {
@@ -7,6 +7,8 @@ export async function login(email: string, password: string): Promise<string> {
       email,
       password,
     });
+    const fiveMinutesFromNow = new Date(Date.now() + 4 * 60 * 1000);
+    localStorage.setItem("tokenExpiresAt", fiveMinutesFromNow.toISOString());
     return response.data;
   } catch (error) {
     const err = error as ApiResponse<string>;
@@ -17,6 +19,7 @@ export async function login(email: string, password: string): Promise<string> {
 export async function logout(): Promise<string> {
   try {
     const response = await api.post<string>("/auth/logout");
+    localStorage.removeItem("tokenExpiresAt");
     return response.data;
   } catch (error) {
     const err = error as ApiResponse<string>;
@@ -24,12 +27,20 @@ export async function logout(): Promise<string> {
   }
 }
 
-export async function isAuthenticated(): Promise<boolean> {
+export async function refreshTokens(): Promise<string> {
   try {
-    await api.post<string>("/auth/refresh");
-
-    return true;
-  } catch {
-    return false;
+    const response = await api.post<string>("/auth/refresh");
+    const fiveMinutesFromNow = new Date(Date.now() + 4 * 60 * 1000);
+    localStorage.setItem("tokenExpiresAt", fiveMinutesFromNow.toISOString());
+    return response.data;
+  } catch (error) {
+    const err = error as ApiResponse<string>;
+    throw new Error(err.data || "Erro inesperado");
   }
+}
+
+export function isTokenValid(tokenExpiresAt: string): boolean {
+  const now = new Date();
+  const expiresAt = new Date(tokenExpiresAt);
+  return now < expiresAt;
 }

@@ -64,3 +64,13 @@ export async function resendEmailConfirmation(userId: string): Promise<string> {
     throw new Error(err.data || "Erro inesperado");
   }
 }
+
+export async function updateUser(user: Partial<User>): Promise<User> {
+  try {
+    const response = await api.put<User>("/users", user);
+    return response.data;
+  } catch (error) {
+    const err = error as ApiResponse<string>;
+    throw new Error(err.data || "Erro inesperado");
+  }
+}
