@@ -73,11 +73,15 @@ public class RoleRepositoryAdapter implements RoleOutputPort {
     @Override
     public Optional<Role> update(Role role) {
         try {
-            JpaRoleEntity roleToUpdate = JpaRoleEntity.from(role);
+            JpaRoleEntity roleToUpdate = jpaRoleRepository.findById(role.getId()).orElse(null);
+            
+            if (roleToUpdate == null) {
+                return Optional.empty();
+            }
 
             roleToUpdate.update(role);
-        
-            return Optional.of(jpaRoleRepository.save(roleToUpdate).toDomainObj());    
+
+            return Optional.of(jpaRoleRepository.save(roleToUpdate).toDomainObj());
         } catch (Exception e) {
             return Optional.empty();
         }

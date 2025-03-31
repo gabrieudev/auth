@@ -82,12 +82,12 @@ public class UserRepositoryAdapter implements UserOutputPort {
     @Override
     public Optional<User> update(User user) {
         try {
-            if (!jpaUserRepository.existsById(user.getId())) {
+            JpaUserEntity userToUpdate = jpaUserRepository.findById(user.getId()).orElse(null);
+
+            if (userToUpdate == null) {
                 return Optional.empty();
             }
 
-            JpaUserEntity userToUpdate = JpaUserEntity.fromDomainObj(user);
-            
             userToUpdate.update(user);
 
             return Optional.of(jpaUserRepository.save(userToUpdate).toDomainObj());
