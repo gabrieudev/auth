@@ -6,42 +6,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  ArrowBigRightDash,
-  CreditCard,
-  GoalIcon,
-  Home,
-  Menu,
-  PiggyBankIcon,
-} from "lucide-react";
+import { Home, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Profile } from "./Profile";
 
 const routes = [
   {
-    href: "/dashboard",
-    label: "Dashboard",
+    href: "/exemplo",
+    label: "Exemplo de rota",
     icon: Home,
-  },
-  {
-    href: "/goals",
-    label: "Metas",
-    icon: GoalIcon,
-  },
-  {
-    href: "/transactions",
-    label: "Transações",
-    icon: ArrowBigRightDash,
-  },
-  {
-    href: "/accounts",
-    label: "Contas",
-    icon: CreditCard,
-  },
-  {
-    href: "/budgets",
-    label: "Orçamentos",
-    icon: PiggyBankIcon,
   },
 ];
 

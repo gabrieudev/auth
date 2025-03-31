@@ -71,7 +71,7 @@ export default function ResetPassword() {
       </Helmet>
 
       <div className="h-screen flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold mb-4">Login</h1>
+        <h1 className="text-3xl font-bold mb-4">Redefinir senha</h1>
         <div className="w-[300px] max-w-md">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

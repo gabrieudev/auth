@@ -54,6 +54,7 @@ export default function SignUp() {
         values.email,
         values.password
       );
+      toast.success("Cadastro realizado com sucesso!");
       navigate("/signin");
     } catch (error) {
       const err = error as Error;

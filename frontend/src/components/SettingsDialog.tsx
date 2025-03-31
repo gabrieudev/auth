@@ -13,6 +13,7 @@ import { getMe, forgotPassword } from "@/services/userService";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { Loader2 } from "lucide-react";
 
 export function SettingsDialog({
   open,
@@ -22,6 +23,7 @@ export function SettingsDialog({
   onOpenChange?: (open: boolean) => void;
 }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -37,6 +39,8 @@ export function SettingsDialog({
   }, []);
 
   const handleForgotPassword = async () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 10000);
     try {
       await forgotPassword();
       toast.success("E-mail enviado com sucesso!");
@@ -75,8 +79,16 @@ export function SettingsDialog({
 
             <div className="flex items-center justify-between mb-4 mt-4">
               <h2 className="text-lg font-semibold">Redefinir senha</h2>
-              <Button onClick={handleForgotPassword} variant="outline">
-                Redefinir
+              <Button
+                onClick={handleForgotPassword}
+                variant="outline"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Redefinir"
+                )}
               </Button>
             </div>
           </TabsContent>
