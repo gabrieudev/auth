@@ -46,6 +46,20 @@ services:
     networks:
       - app-network
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:9090/api/v1
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
   postgres:
     container_name: database
     image: postgres:16-alpine
