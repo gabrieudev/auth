@@ -86,16 +86,24 @@ git clone https://github.com/gabrieudev/auth.git
 
 To run the application, you need to create a `.env` file in the project's root directory containing the following environment variables:
 
-| Key                   | Default Value                        | Required | Description                                              |
-| --------------------- | ------------------------------------ | -------- | -------------------------------------------------------- |
-| `SERVER_PORT`         | 8080                                 | ✅       | Server port.                                             |
-| `PROFILE`             | dev                                  | ✅       | Profile in which the application will run (dev or prod). |
-| `DATASOURCE_URL`      | jdbc:postgresql://postgres:5432/auth | ✅       | Database connection URL.                                 |
-| `DATASOURCE_USERNAME` | admin                                | ✅       | Database connection username.                            |
-| `DATASOURCE_PASSWORD` | admin                                | ✅       | Database connection password.                            |
-| `REDIS_HOST`          | redis                                | ✅       | Redis connection host.                                   |
-| `REDIS_PORT`          | 6379                                 | ✅       | Redis connection port.                                   |
-| `REDIS_PASSWORD`      | admin                                | ✅       | Redis connection password.                               |
+| Key                        | Default Value                         | Defined | Description                                                 |
+| -------------------------- | ------------------------------------- | ------- | ----------------------------------------------------------- |
+| `SERVER_PORT`              | 8080                                  | ✅      | server port.                                                |
+| `PROFILE`                  | dev                                   | ✅      | profile in which the application will run (dev or prod).    |
+| `DATASOURCE_URL`           | jdbc:postgresql://postgres:5432/auth  | ✅      | database connection URL.                                    |
+| `DATASOURCE_USERNAME`      | admin                                 | ✅      | database connection username.                               |
+| `DATASOURCE_PASSWORD`      | admin                                 | ✅      | database connection password.                               |
+| `REDIS_HOST`               | redis                                 | ✅      | Redis connection host.                                      |
+| `REDIS_PORT`               | 6379                                  | ✅      | Redis connection port.                                      |
+| `REDIS_PASSWORD`           | admin                                 | ✅      | Redis connection password.                                  |
+| `EMAIL_HOST`               | smtp.gmail.com                        | ✅      | email host.                                                 |
+| `EMAIL_PORT`               | 587                                   | ✅      | email port.                                                 |
+| `EMAIL_USERNAME`           | none                                  | ❌      | email for sending notifications through the application.    |
+| `EMAIL_PASSWORD`           | none                                  | ❌      | app password.                                               |
+| `API_BASE_URL`             | http://localhost:{SERVER_PORT}/api/v1 | ✅      | API base URL.                                               |
+| `FRONTEND_BASE_URL`        | http://localhost:5137                 | ✅      | base URL of some interface for interaction and redirection. |
+| `ACCESS_TOKEN_EXPIRATION`  | 5                                     | ✅      | access token expiration time in minutes.                    |
+| `REFRESH_TOKEN_EXPIRATION` | 10080                                 | ✅      | refresh token expiration time in minutes.                   |
 
 <h3>Initializing</h3>
 
