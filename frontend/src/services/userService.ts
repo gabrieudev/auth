@@ -54,3 +54,13 @@ export async function resetPassword(code: string, password: string) {
     throw new Error(err.data || "Erro inesperado");
   }
 }
+
+export async function resendEmailConfirmation(userId: string): Promise<string> {
+  try {
+    const response = await api.post<string>(`/users/${userId}/email`);
+    return response.data;
+  } catch (error) {
+    const err = error as ApiResponse<string>;
+    throw new Error(err.data || "Erro inesperado");
+  }
+}
