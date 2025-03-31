@@ -105,6 +105,8 @@ To run the application, you need to create a `.env` file in the project's root d
 | `ACCESS_TOKEN_EXPIRATION`  | 5                                     | ✅      | access token expiration time in minutes.                    |
 | `REFRESH_TOKEN_EXPIRATION` | 10080                                 | ✅      | refresh token expiration time in minutes.                   |
 
+> If you don't know how to obtain the app password, the [Google Help Center](https://support.google.com/accounts/answer/185833?hl=en) can assist you.
+
 <h3>Initializing</h3>
 
 Run the following commands:
