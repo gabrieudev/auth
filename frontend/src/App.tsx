@@ -1,41 +1,25 @@
+import { Loader2 } from "lucide-react";
+import React from "react";
+import { HelmetProvider } from "react-helmet-async";
 import {
   BrowserRouter,
-  Routes,
-  Route,
   Navigate,
   Outlet,
+  Route,
+  Routes,
 } from "react-router-dom";
-import Home from "./pages/Home";
-import SignIn from "./pages/SignIn";
-import React, { useEffect, useState } from "react";
-import { HelmetProvider } from "react-helmet-async";
-import SignUp from "./pages/SignUp";
+import { useAuth } from "./hooks/useAuth";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
-import { isTokenValid, refreshTokens } from "./services/authService";
+import Home from "./pages/Home";
 import ResetPassword from "./pages/ResetPassword";
-import { Loader2 } from "lucide-react";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 const PrivateRoute: React.FC = () => {
-  const [auth, setAuth] = useState<boolean | null>(null);
-  const tokenExpiresAt = localStorage.getItem("tokenExpiresAt");
+  const { isAuthenticated, loadingAuth } = useAuth();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!tokenExpiresAt) {
-        setAuth(false);
-      }
-      if (isTokenValid(tokenExpiresAt || "")) {
-        setAuth(true);
-      } else {
-        await refreshTokens();
-        setAuth(true);
-      }
-    };
-    checkAuth();
-  }, [tokenExpiresAt]);
-
-  if (auth === null) {
+  if (loadingAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="animate-spin" />
@@ -43,29 +27,13 @@ const PrivateRoute: React.FC = () => {
     );
   }
 
-  return auth ? <Outlet /> : <Navigate to="/signin" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/" />;
 };
 
 const PublicRoute: React.FC = () => {
-  const [auth, setAuth] = useState<boolean | null>(null);
-  const tokenExpiresAt = localStorage.getItem("tokenExpiresAt");
+  const { isAuthenticated, loadingAuth } = useAuth();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!tokenExpiresAt) {
-        setAuth(false);
-      }
-      if (isTokenValid(tokenExpiresAt || "")) {
-        setAuth(true);
-      } else {
-        await refreshTokens();
-        setAuth(true);
-      }
-    };
-    checkAuth();
-  }, [tokenExpiresAt]);
-
-  if (auth === null) {
+  if (loadingAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="animate-spin" />
@@ -73,7 +41,7 @@ const PublicRoute: React.FC = () => {
     );
   }
 
-  return auth ? <Navigate to="/dashboard" /> : <Outlet />;
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/dashboard" />;
 };
 
 const App: React.FC = () => {
@@ -87,6 +55,7 @@ const App: React.FC = () => {
               <Route path="/reset-password" element={<ResetPassword />} />
             </Route>
           </Route>
+
           <Route element={<PublicRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/signin" element={<SignIn />} />

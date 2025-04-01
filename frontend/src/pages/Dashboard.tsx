@@ -1,24 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import { EmailConfirmation } from "@/components/EmailConfirmation";
-import { getMe } from "@/services/userService";
-import { useState, useEffect } from "react";
-import { User } from "@/types/user";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      await getMe()
-        .then((data) => {
-          setUser(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-    fetchUser();
-  }, []);
+  const { user } = useAuth();
 
   return (
     <>

@@ -7,14 +7,15 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { forgotPassword, updateUser } from "@/services/userService";
-import { User } from "@/types/user";
 import { AxiosError } from "axios";
 import { Loader2, PenBoxIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { getMe } from "@/services/userService";
+import { useAuth } from "@/hooks/useAuth";
+import { ApiResponse } from "@/types/apiResponse";
+import { User } from "@/types/user";
 
 export function SettingsDialog({
   open,
@@ -23,28 +24,15 @@ export function SettingsDialog({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { user, loadingUser } = useAuth();
+  const [loadingPassword, setLoadingPassword] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      await getMe()
-        .then((data) => {
-          setUser(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-    fetchUser();
-  }, []);
-
   const handleForgotPassword = async () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 10000);
+    setLoadingPassword(true);
+    setTimeout(() => setLoadingPassword(false), 10000);
     try {
       await forgotPassword();
       toast.success("E-mail enviado com sucesso!");
@@ -55,22 +43,18 @@ export function SettingsDialog({
   };
 
   const handleUpdateUser = async () => {
-    if (!user) return;
     try {
-      await updateUser({ ...user, firstName, lastName });
-      setUser(
-        (prev) =>
-          ({
-            ...prev,
-            firstName,
-            lastName,
-          } as User)
-      );
-      toast.success("Nome atualizado com sucesso!");
-      setEditDialogOpen(false);
+      const updatedUser = {
+        id: user?.id,
+        firstName,
+        lastName,
+      } as User;
+      await updateUser(updatedUser);
+      toast.success("Dados atualizados com sucesso!");
+      setTimeout(() => window.location.reload(), 1500);
     } catch (error) {
-      const err = error as AxiosError;
-      toast.error(err.message);
+      const err = error as ApiResponse<string>;
+      toast.error(err.data || "Erro inesperado");
     }
   };
 
@@ -93,15 +77,21 @@ export function SettingsDialog({
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Nome</h2>
                 <div className="flex items-center gap-2">
-                  <p>
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <Button
-                    onClick={() => setEditDialogOpen(true)}
-                    variant="outline"
-                  >
-                    <PenBoxIcon />
-                  </Button>
+                  {loadingUser ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <>
+                      <p>
+                        {user?.firstName} {user?.lastName}
+                      </p>
+                      <Button
+                        onClick={() => setEditDialogOpen(true)}
+                        variant="outline"
+                      >
+                        <PenBoxIcon />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -134,7 +124,11 @@ export function SettingsDialog({
 
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">E-mail</h2>
-                <p>{user?.email}</p>
+                {loadingUser ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <p>{user?.email}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
@@ -142,9 +136,9 @@ export function SettingsDialog({
                 <Button
                   onClick={handleForgotPassword}
                   variant="outline"
-                  disabled={loading}
+                  disabled={loadingPassword}
                 >
-                  {loading ? (
+                  {loadingPassword ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     "Redefinir"

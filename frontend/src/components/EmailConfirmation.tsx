@@ -4,7 +4,11 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function EmailConfirmation({ userId }: { userId: string }) {
+interface EmailConfirmationProps {
+  userId: string;
+}
+
+export function EmailConfirmation({ userId }: EmailConfirmationProps) {
   const [loading, setLoading] = useState(false);
 
   const handleResend = () => {

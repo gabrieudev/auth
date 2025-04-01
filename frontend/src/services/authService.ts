@@ -38,9 +38,3 @@ export async function refreshTokens(): Promise<string> {
     throw new Error(err.data || "Erro inesperado");
   }
 }
-
-export function isTokenValid(tokenExpiresAt: string): boolean {
-  const now = new Date();
-  const expiresAt = new Date(tokenExpiresAt);
-  return now < expiresAt;
-}

@@ -9,33 +9,20 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, User2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { SettingsDialog } from "./SettingsDialog";
+import { useAuth } from "@/hooks/useAuth";
 import { logout } from "@/services/authService";
-import { getMe } from "@/services/userService";
-import { User } from "@/types/user";
-import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { LogOut, Settings, User2Icon } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { SettingsDialog } from "./SettingsDialog";
+import { Loader2 } from "lucide-react";
 
 export function Profile() {
   const navigate = useNavigate();
+  const { user, loadingUser } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      await getMe()
-        .then((data) => {
-          setUser(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-    fetchUser();
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -62,7 +49,13 @@ export function Profile() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
-          {user?.firstName} {user?.lastName}
+          {loadingUser ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              {user?.firstName} {user?.lastName}
+            </>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
