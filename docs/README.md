@@ -60,6 +60,7 @@
 │   │   ├── types/                            # Interfaces reflecting backend responses
 │   │   ├── layouts/                          # Layouts
 │   │   ├── services/                         # Services and requests
+│   │   ├── hooks/                            # Custom hooks
 │   │   └── pages/                            # Pages
 │   └── Dockerfile                            # Frontend Dockerfile
 │
