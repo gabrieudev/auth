@@ -1,69 +1,65 @@
-import { Loader2 } from "lucide-react";
 import React from "react";
 import { HelmetProvider } from "react-helmet-async";
-import {
-  BrowserRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import ResetPassword from "./pages/ResetPassword";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-
-const PrivateRoute: React.FC = () => {
-  const { isAuthenticated, loadingAuth } = useAuth();
-
-  if (loadingAuth) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
-    );
-  }
-
-  return isAuthenticated ? <Outlet /> : <Navigate to="/" />;
-};
-
-const PublicRoute: React.FC = () => {
-  const { isAuthenticated, loadingAuth } = useAuth();
-
-  if (loadingAuth) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
-    );
-  }
-
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/dashboard" />;
-};
+import { AuthProvider } from "./providers/AuthContext";
+import { PrivateRoute } from "./components/PrivateRoute";
+import { PublicRoute } from "./components/PublicRoute";
 
 const App: React.FC = () => {
   return (
-    <HelmetProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route element={<PrivateRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-            </Route>
-          </Route>
-
-          <Route element={<PublicRoute />}>
+    <AuthProvider>
+      <HelmetProvider>
+        <Router>
+          <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </HelmetProvider>
+
+            <Route
+              path="/signin"
+              element={
+                <PublicRoute>
+                  <SignIn />
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/signup"
+              element={
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              }
+            />
+
+            <Route element={<MainLayout />}>
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/reset-password"
+                element={
+                  <PrivateRoute>
+                    <ResetPassword />
+                  </PrivateRoute>
+                }
+              />
+            </Route>
+          </Routes>
+        </Router>
+      </HelmetProvider>
+    </AuthProvider>
   );
 };
 

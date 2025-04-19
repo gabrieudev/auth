@@ -13,7 +13,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/providers/AuthContext";
 import { ApiResponse } from "@/types/apiResponse";
 import { User } from "@/types/user";
 
@@ -24,15 +24,15 @@ export function SettingsDialog({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-  const { user, loadingUser } = useAuth();
-  const [loadingPassword, setLoadingPassword] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { user, isLoading } = useAuth();
+  const [isLoadingPassword, setIsLoadingPassword] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
   const handleForgotPassword = async () => {
-    setLoadingPassword(true);
-    setTimeout(() => setLoadingPassword(false), 10000);
+    setIsLoadingPassword(true);
+    setTimeout(() => setIsLoadingPassword(false), 10000);
     try {
       await forgotPassword();
       toast.success("E-mail enviado com sucesso!");
@@ -77,7 +77,7 @@ export function SettingsDialog({
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Nome</h2>
                 <div className="flex items-center gap-2">
-                  {loadingUser ? (
+                  {isLoading ? (
                     <Loader2 className="animate-spin" />
                   ) : (
                     <>
@@ -85,7 +85,7 @@ export function SettingsDialog({
                         {user?.firstName} {user?.lastName}
                       </p>
                       <Button
-                        onClick={() => setEditDialogOpen(true)}
+                        onClick={() => setIsEditDialogOpen(true)}
                         variant="outline"
                       >
                         <PenBoxIcon />
@@ -95,7 +95,10 @@ export function SettingsDialog({
                 </div>
               </div>
 
-              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+              <Dialog
+                open={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+              >
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle className="mb-4">Editar Nome</DialogTitle>
@@ -124,7 +127,7 @@ export function SettingsDialog({
 
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">E-mail</h2>
-                {loadingUser ? (
+                {isLoading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
                   <p>{user?.email}</p>
@@ -136,9 +139,9 @@ export function SettingsDialog({
                 <Button
                   onClick={handleForgotPassword}
                   variant="outline"
-                  disabled={loadingPassword}
+                  disabled={isLoadingPassword}
                 >
-                  {loadingPassword ? (
+                  {isLoadingPassword ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     "Redefinir"

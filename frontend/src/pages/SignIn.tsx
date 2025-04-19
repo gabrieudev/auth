@@ -12,11 +12,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/services/authService";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/providers/AuthContext";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Informe um e-mail válido" }),
@@ -27,6 +27,7 @@ const signInSchema = z.object({
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -40,7 +41,7 @@ export default function SignIn() {
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     setIsLoading(true);
     try {
-      await login(values.email, values.password);
+      await signIn(values);
       navigate("/dashboard");
     } catch (error) {
       const err = error as Error;

@@ -9,7 +9,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/providers/AuthContext";
 import { logout } from "@/services/authService";
 import { AxiosError } from "axios";
 import { LogOut, Settings, User2Icon } from "lucide-react";
@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 
 export function Profile() {
   const navigate = useNavigate();
-  const { user, loadingUser } = useAuth();
+  const { user, isLoading } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -49,7 +49,7 @@ export function Profile() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
-          {loadingUser ? (
+          {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
