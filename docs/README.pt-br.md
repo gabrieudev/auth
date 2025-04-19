@@ -51,11 +51,11 @@
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/                       # Componentes
+│   │   ├── components/                       # Componentes reutilizáveis
 │   │   ├── types/                            # Interfaces que refletem as respostas do backend
 │   │   ├── layouts/                          # Layouts
 │   │   ├── services/                         # Serviços e requisições
-│   │   ├── hooks/                            # Hooks personalizados
+│   │   ├── providers/                        # Providers que envolvem a aplicação
 │   │   └── pages/                            # Páginas
 │   └── Dockerfile                            # Dockerfile para o frontend
 │

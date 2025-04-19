@@ -56,11 +56,11 @@
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/                       # Components
+│   │   ├── components/                       # Reusable components
 │   │   ├── types/                            # Interfaces reflecting backend responses
 │   │   ├── layouts/                          # Layouts
 │   │   ├── services/                         # Services and requests
-│   │   ├── hooks/                            # Custom hooks
+│   │   ├── providers/                        # Providers involving the application
 │   │   └── pages/                            # Pages
 │   └── Dockerfile                            # Frontend Dockerfile
 │
