@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiResponse } from "@/types/apiResponse";
+import { ApiResponse } from "@/types";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

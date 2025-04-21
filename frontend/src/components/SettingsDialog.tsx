@@ -6,16 +6,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/providers/AuthContext";
 import { forgotPassword, updateUser } from "@/services/userService";
-import { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2, PenBoxIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { useAuth } from "@/providers/AuthContext";
-import { ApiResponse } from "@/types/apiResponse";
-import { User } from "@/types/user";
 
 export function SettingsDialog({
   open,
@@ -25,38 +23,31 @@ export function SettingsDialog({
   onOpenChange?: (open: boolean) => void;
 }) {
   const { user, isLoading } = useAuth();
-  const [isLoadingPassword, setIsLoadingPassword] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
-  const handleForgotPassword = async () => {
-    setIsLoadingPassword(true);
-    setTimeout(() => setIsLoadingPassword(false), 10000);
-    try {
-      await forgotPassword();
+  const updateUserMutation = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      setIsEditDialogOpen(false);
+      toast.success("Usuário atualizado com sucesso!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar o usuário");
+    },
+  });
+  const forgotPasswordMutation = useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: () => {
       toast.success("E-mail enviado com sucesso!");
-    } catch (error) {
-      const err = error as AxiosError;
-      toast.error(err.message);
-    }
-  };
-
-  const handleUpdateUser = async () => {
-    try {
-      const updatedUser = {
-        id: user?.id,
-        firstName,
-        lastName,
-      } as User;
-      await updateUser(updatedUser);
-      toast.success("Dados atualizados com sucesso!");
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (error) {
-      const err = error as ApiResponse<string>;
-      toast.error(err.data || "Erro inesperado");
-    }
-  };
+    },
+    onError: () => {
+      toast.error("Erro ao enviar o e-mail");
+    },
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -118,7 +109,16 @@ export function SettingsDialog({
                       placeholder="Sobrenome"
                       className="input"
                     />
-                    <Button onClick={handleUpdateUser} variant="default">
+                    <Button
+                      onClick={() =>
+                        updateUserMutation.mutate({
+                          id: user?.id,
+                          firstName,
+                          lastName,
+                        })
+                      }
+                      variant="default"
+                    >
                       Salvar
                     </Button>
                   </div>
@@ -137,11 +137,11 @@ export function SettingsDialog({
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Redefinir senha</h2>
                 <Button
-                  onClick={handleForgotPassword}
+                  onClick={() => forgotPasswordMutation.mutate()}
                   variant="outline"
-                  disabled={isLoadingPassword}
+                  disabled={forgotPasswordMutation.isPending}
                 >
-                  {isLoadingPassword ? (
+                  {forgotPasswordMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     "Redefinir"

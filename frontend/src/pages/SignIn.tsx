@@ -1,7 +1,3 @@
-import { Helmet } from "react-helmet-async";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,11 +8,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useNavigate, Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Informe um e-mail válido" }),
@@ -28,7 +28,16 @@ const signInSchema = z.object({
 export default function SignIn() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const signInMutation = useMutation({
+    mutationFn: signIn,
+    onSuccess: () => {
+      toast.success("Login realizado com sucesso!");
+      navigate("/dashboard");
+    },
+    onError: () => {
+      toast.error(signInMutation.data || "Erro inesperado");
+    },
+  });
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -39,16 +48,7 @@ export default function SignIn() {
   });
 
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-    setIsLoading(true);
-    try {
-      await signIn(values);
-      navigate("/dashboard");
-    } catch (error) {
-      const err = error as Error;
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+    signInMutation.mutate(values);
   }
 
   return (
@@ -95,8 +95,12 @@ export default function SignIn() {
                 )}
               />
               <div className="flex justify-center">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? <Loader2 className="animate-spin" /> : "Entrar"}
+                <Button type="submit" disabled={signInMutation.isPending}>
+                  {signInMutation.isPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Entrar"
+                  )}
                 </Button>
               </div>
               <p className="text-center mt-4">

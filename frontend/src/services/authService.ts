@@ -1,7 +1,7 @@
-import { ApiResponse } from "@/types/apiResponse";
+import { Credentials, ApiResponse } from "@/types";
 import api from "./api";
 
-export async function login(email: string, password: string): Promise<string> {
+export async function login({ email, password }: Credentials): Promise<string> {
   try {
     const response = await api.post<string>("/auth/login", {
       email,

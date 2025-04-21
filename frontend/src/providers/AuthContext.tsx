@@ -1,4 +1,4 @@
-import { User } from "@/types/user";
+import { User, Credentials } from "@/types";
 import {
   createContext,
   useContext,
@@ -38,38 +38,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const initializeAuth = async () => {
       try {
-        const data = await getMe();
-        setUser(data);
-      } catch (err) {
-        console.error(err);
+        if (!validateToken()) {
+          await refreshTokens();
+        }
+        const userData = await getMe();
+        setUser(userData);
+      } catch {
+        authLogout();
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    const refresh = async () => {
-      try {
-        await refreshTokens();
-      } catch {
-        authLogout();
-      }
-    };
-
-    if (!validateToken()) {
-      refresh();
-    }
-
-    fetchUser();
+    initializeAuth();
   }, []);
 
-  const signIn = async (credentials: {
-    email: string;
-    password: string;
-  }): Promise<void> => {
+  const signIn = async (credentials: Credentials): Promise<void> => {
     try {
-      await authLogin(credentials.email, credentials.password);
+      await authLogin(credentials);
       const data = await getMe();
       setUser(data);
     } catch (err) {

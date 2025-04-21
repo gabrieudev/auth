@@ -1,7 +1,3 @@
-import { Helmet } from "react-helmet-async";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,12 +8,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { resetPassword } from "@/services/userService";
 import { logout } from "@/services/authService";
-import { toast } from "sonner";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { resetPassword } from "@/services/userService";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const passwordSchema = z
   .object({
@@ -34,10 +34,27 @@ const passwordSchema = z
   });
 
 export default function ResetPassword() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
+  const resetPasswordMutation = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      toast.success("Senha redefinida com sucesso!");
+    },
+    onError: () => {
+      toast.error(resetPasswordMutation.data || "Erro inesperado");
+    },
+  });
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      navigate("/signin");
+    },
+    onError: () => {
+      toast.error(logoutMutation.data || "Erro inesperado");
+    },
+  });
 
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -48,18 +65,11 @@ export default function ResetPassword() {
   });
 
   async function onSubmit(values: z.infer<typeof passwordSchema>) {
-    setIsLoading(true);
-    try {
-      await resetPassword(code || "", values.password);
-      await logout();
-      toast.success("Senha redefinida com sucesso!");
-      navigate("/signin");
-    } catch (error) {
-      const err = error as Error;
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+    resetPasswordMutation.mutate({
+      code: code || "",
+      password: values.password,
+    });
+    logoutMutation.mutate();
   }
 
   return (
@@ -110,8 +120,11 @@ export default function ResetPassword() {
                 )}
               />
               <div className="flex justify-center">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
+                <Button
+                  type="submit"
+                  disabled={resetPasswordMutation.isPending}
+                >
+                  {resetPasswordMutation.isPending ? (
                     <Loader2 className="animate-spin" />
                   ) : (
                     "Redefinir"

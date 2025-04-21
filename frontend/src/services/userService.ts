@@ -1,13 +1,12 @@
 import api from "./api";
-import { ApiResponse } from "@/types/apiResponse";
-import { User } from "@/types/user";
+import { ApiResponse, ResetPassword, User, Signup } from "@/types";
 
-export async function signup(
-  firstName: string,
-  lastName: string,
-  email: string,
-  password: string
-): Promise<User> {
+export async function signup({
+  firstName,
+  lastName,
+  email,
+  password,
+}: Signup): Promise<User> {
   try {
     const response = await api.post<User>("/users", {
       firstName,
@@ -42,7 +41,10 @@ export async function forgotPassword(): Promise<string> {
   }
 }
 
-export async function resetPassword(code: string, password: string) {
+export async function resetPassword({
+  code,
+  password,
+}: ResetPassword): Promise<string> {
   try {
     const response = await api.post<string>("/users/reset-password", {
       code,

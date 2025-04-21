@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { resendEmailConfirmation } from "@/services/userService";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 interface EmailConfirmationProps {
@@ -9,21 +9,15 @@ interface EmailConfirmationProps {
 }
 
 export function EmailConfirmation({ userId }: EmailConfirmationProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleResend = () => {
-    setIsLoading(true);
-    resendEmailConfirmation(userId)
-      .then(() => {
-        toast.success("E-mail enviado com sucesso!");
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  const mutation = useMutation({
+    mutationFn: resendEmailConfirmation,
+    onSuccess: () => {
+      toast.success("E-mail reenviado com sucesso!");
+    },
+    onError: () => {
+      toast.error(mutation.data);
+    },
+  });
 
   return (
     <div className="flex items-center justify-center h-full">
@@ -42,8 +36,12 @@ export function EmailConfirmation({ userId }: EmailConfirmationProps) {
           reenviar.
         </p>
         <div className="flex items-center justify-center">
-          <Button onClick={handleResend} variant="default" disabled={isLoading}>
-            {isLoading ? (
+          <Button
+            onClick={() => mutation.mutate(userId)}
+            variant="default"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               "Reenviar"

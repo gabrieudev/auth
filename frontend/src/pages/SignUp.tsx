@@ -16,7 +16,7 @@ import { signup } from "@/services/userService";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 const signUpSchema = z.object({
   firstName: z
@@ -33,7 +33,16 @@ const signUpSchema = z.object({
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const signUpMutation = useMutation({
+    mutationFn: signup,
+    onSuccess: () => {
+      toast.success("Cadastro realizado com sucesso!");
+      navigate("/signin");
+    },
+    onError: () => {
+      toast.error(signUpMutation.error?.message);
+    },
+  });
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -46,22 +55,9 @@ export default function SignUp() {
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    setIsLoading(true);
-    try {
-      await signup(
-        values.firstName,
-        values.lastName,
-        values.email,
-        values.password
-      );
-      toast.success("Cadastro realizado com sucesso!");
-      navigate("/signin");
-    } catch (error) {
-      const err = error as Error;
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+    signUpMutation.mutate(values);
+    form.reset();
+    navigate("/signin");
   }
 
   return (
@@ -138,8 +134,8 @@ export default function SignUp() {
                 )}
               />
               <div className="flex justify-center">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
+                <Button type="submit" disabled={signUpMutation.isPending}>
+                  {signUpMutation.isPending ? (
                     <Loader2 className="animate-spin" />
                   ) : (
                     "Cadastrar"

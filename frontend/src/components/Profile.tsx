@@ -11,28 +11,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/providers/AuthContext";
 import { logout } from "@/services/authService";
-import { AxiosError } from "axios";
-import { LogOut, Settings, User2Icon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, LogOut, Settings, User2Icon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SettingsDialog } from "./SettingsDialog";
-import { Loader2 } from "lucide-react";
 
 export function Profile() {
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const handleSignOut = async () => {
-    try {
-      await logout();
-      navigate("/signin");
-    } catch (error) {
-      const err = error as AxiosError;
-      toast.error(err.message);
-    }
-  };
+  const mutation = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      navigate("/");
+    },
+    onError: () => {
+      toast.error(mutation.data);
+    },
+  });
 
   const handleSettingsOpen = (e: Event) => {
     e.preventDefault();
@@ -67,7 +65,7 @@ export function Profile() {
               </DropdownMenuShortcut>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut}>
+          <DropdownMenuItem onClick={() => mutation.mutate()}>
             Sair
             <DropdownMenuShortcut>
               <LogOut className="h-4 w-4" />
